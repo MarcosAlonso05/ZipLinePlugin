@@ -1,0 +1,88 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Zip_Line.name"
+  },
+  "PlayerAnimationsId": "Item",
+  "Categories": [
+    "Items.Tools"
+  ],
+  "Icon": "Icons/ItemsGenerated/Zip_Line.png",
+  "IconProperties": {
+    "Scale": 0.7,
+    "Rotation": [
+      40,
+      88,
+      22.5
+    ],
+    "Translation": [
+      -8,
+      -13
+    ]
+  },
+  "Interactions": {
+    "Primary": "Block_Primary",
+    "Secondary": "Block_Secondary"
+  },
+  "Recipe": {
+    "Input": [
+      {
+        "ResourceTypeId": "Wood_Lightwood_Softwood"
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Id": "Builders",
+        "Type": "Crafting",
+        "Categories": [
+          "Ladder"
+        ]
+      }
+    ],
+    "OutputQuantity": 2
+  },
+  "BlockType": {
+    "BlockParticleSetId": "Wood",
+    "BlockSoundSetId": "Wood",
+    "CustomModel": "Blocks/Marck_Zip_Line/Zip_Line.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Marck_Zip_Line/Zip_Line_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "DrawType": "Model",
+    "Flags": {
+      "IsUsable": true
+    },
+    "BlockEntity":{
+      "Components": {
+        "ZiplineComponent": {}
+      }
+    },
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Woods"
+      }
+    },
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "ConnectZipline"
+          }
+        ]
+      }
+    },
+    "PlacementSettings": {
+      "RotationMode": "BlockNormal",
+      "BlockPreviewVisibility": "AlwaysVisible"
+    },
+    "Material": "Solid",
+    "Opacity": "Transparent",
+    "ParticleColor": "#63412c",
+    "VariantRotation": "NESW",
+    "HitboxType": "Zip_Line"
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood",
+  "MaxStack": 10
+}

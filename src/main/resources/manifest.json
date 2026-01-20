@@ -1,14 +1,16 @@
 {
-  "Group": "${plugin_group}",
-  "Name": "${plugin_name}",
-  "Version": "${plugin_version}",
-  "Description": "${plugin_description}",
+  "Group": "Marck.A.A",
+  "Name": "Zip_Line",
+  "Version": "1.0.0",
+  "Description": "A pack that implements a zip line",
   "Authors": [
     {
-      "Name": "${plugin_author}"
+      "Name": "Marck.A.A",
+      "Email": "",
+      "Url": "https://www.youtube.com/@Marck.A.A"
     }
   ],
-  "Website": "${plugin_website}",
+  "Website": "https://www.youtube.com/@Marck.A.A",
   "ServerVersion": "${server_version}",
   "Dependencies": {},
   "OptionalDependencies": {},

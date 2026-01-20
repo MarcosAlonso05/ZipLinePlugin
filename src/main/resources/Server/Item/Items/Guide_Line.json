@@ -1,0 +1,17 @@
+{
+  "Model": "Blocks/Marck_Zip_Line/Guide_Line.blockymodel",
+  "Texture": "Blocks/Marck_Zip_Line/Guide_Line_Texture.png",
+  "Icon": "Icons/ItemsGenerated/Guide_Line.png",
+  "IconProperties": {
+    "Scale": 0.58823,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  }
+}
