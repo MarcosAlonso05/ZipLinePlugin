@@ -13,5 +13,8 @@
       0,
       -13.5
     ]
+  },
+  "TranslationProperties": {
+    "Name": "server.items.Line_Guide.name"
   }
 }
