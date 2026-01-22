@@ -6,6 +6,7 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
@@ -84,29 +85,114 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
             }
 
             int heightDiff = Math.abs(posA.y - posB.y);
-            if (heightDiff < 3) {
-                player.sendMessage(Message.raw("§cError: Necesitas al menos 3 bloques de desnivel."));
+            if (heightDiff < 5) {
+                player.sendMessage(Message.raw("§cError: Necesitas al menos 5 bloques de desnivel."));
                 return;
             }
 
             double distance = posA.distanceTo(posB);
-            if (distance < 6.0) {
-                player.sendMessage(Message.raw("§cError: Demasiado cerca (Min 6)."));
+            if (distance < 10.0) {
+                player.sendMessage(Message.raw("§cError: Demasiado cerca (Min 10)."));
                 return;
             }
 
             if (!isAligned(world, posA, posB)) {
-                player.sendMessage(Message.raw("§cError: Los soportes no están alineados con su orientación (Eje invertido)."));
+                player.sendMessage(Message.raw("§cError: Los soportes no están alineados con su orientación."));
                 return;
             }
 
             anchor.setConnection(posA);
             anchorA.setConnection(posB);
 
+            // --- VISUAL CONNECTION ---
+            drawCable(world, posA, posB);
+
             ItemStack cleanItem = itemInHand.withMetadata("GuideData", GuideLineData.CODEC, null);
             inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, cleanItem);
             player.sendMessage(Message.raw("§a¡Tirolina conectada!"));
         }
+    }
+
+    private void drawCable(World world, Vector3i p1, Vector3i p2) {
+        // 1. NORMALIZACIÓN (Low -> High)
+        Vector3i low, high;
+        if (p1.y < p2.y) { low = p1; high = p2; }
+        else { low = p2; high = p1; }
+
+        // Distancias totales en cada eje
+        int dx = high.x - low.x;
+        int dy = high.y - low.y;
+        int dz = high.z - low.z;
+
+        // 2. DETERMINAR EL EJE DOMINANTE (¿Es más largo en X o en Z?)
+        // Esto define cuántos pasos enteros daremos.
+        int steps = Math.max(Math.abs(dx), Math.abs(dz));
+
+        // Si steps es 0 (línea vertical pura), evitamos división por cero
+        if (steps == 0) return;
+
+        // 3. CÁLCULO DE ROTACIÓN (Tu lógica invertida)
+        int rotation;
+        if (Math.abs(dx) > Math.abs(dz)) {
+            rotation = (dx > 0) ? 3 : 1; // Eje X
+        } else {
+            rotation = (dz > 0) ? 2 : 0; // Eje Z
+        }
+
+        // 4. BUCLE DE PASOS ENTEROS
+        // Iteramos 'k' desde 1 hasta steps-1 (para no tocar el inicio ni el final)
+        for (int k = 1; k < steps; k++) {
+
+            // Calculamos la posición exacta interpolando
+            // Usamos 'Math.floor' para asegurar que caemos en el bloque correcto
+            int curX = low.x + (dx * k / steps);
+            int curZ = low.z + (dz * k / steps);
+
+            // CÁLCULO DE ALTURA INTELIGENTE
+            // yPrev: Altura en el paso anterior
+            int yPrev = low.y + (dy * (k - 1) / steps);
+
+            // yCur: Altura en el paso actual
+            int yCur  = low.y + (dy * k / steps);
+
+            // yNext: Altura en el paso siguiente (LOOK AHEAD)
+            int yNext = low.y + (dy * (k + 1) / steps);
+
+            // Protección de seguridad
+            if (curX == high.x && yCur == high.y && curZ == high.z) break;
+
+            String blockToPlace;
+
+            // --- LÓGICA DE DETECCIÓN EXACTA ---
+
+            // 1. Si el siguiente bloque va a ser más alto -> SOY LA BASE (Bottom)
+            if (yCur < yNext) {
+                blockToPlace = "Zip_Line_Rope3"; // Bottom / Base de subida
+            }
+            // 2. Si el bloque anterior era más bajo -> SOY LA CIMA (Top)
+            else if (yCur > yPrev) {
+                blockToPlace = "Zip_Line_Rope2"; // Top / Fin de subida
+            }
+            // 3. Si no hay cambios de altura -> PLANO
+            else {
+                blockToPlace = "Zip_Line_Rope";  // Flat
+            }
+
+            setBlock(world, curX, yCur, curZ, blockToPlace, rotation);
+        }
+    }
+
+    // El helper setBlock se mantiene igual que la última vez (usando blockIdOrUnknown)
+    private void setBlock(World world, int x, int y, int z, String blockAssetName, int rotation) {
+        WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(x, z));
+        if (chunk == null || chunk.getBlockChunk() == null) return;
+        BlockSection section = chunk.getBlockChunk().getSectionAtBlockY(y);
+        if (section == null) return;
+
+        int blockId = BlockType.getBlockIdOrUnknown(blockAssetName, "ErrorBlock", new Object[0]);
+        if (blockId == -1) return;
+
+        section.set(x & 31, y & 31, z & 31, blockId, rotation, 0);
     }
 
     private int getBlockRotation(World world, int x, int y, int z) {
@@ -116,27 +202,16 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         return section.getRotationIndex(x & 31, y, z & 31);
     }
 
-    // --- LÓGICA INVERTIDA ---
     private boolean isAligned(World world, Vector3i posA, Vector3i posB) {
         int rotationIndex = getBlockRotation(world, posA.x, posA.y, posA.z);
-
-        // Grupo 1: Norte/Sur (Indices 0 y 2)
         boolean isGroupNS = (rotationIndex == 0 || rotationIndex == 2);
-
-        // Grupo 2: Este/Oeste (Indices 1 y 3)
         boolean isGroupEW = (rotationIndex == 1 || rotationIndex == 3);
 
         if (isGroupNS) {
-            // CAMBIO: Antes pedíamos 'posA.x == posB.x' (Cable por Z).
-            // AHORA pedimos 'posA.z == posB.z' (Cable por X).
             return posA.z == posB.z;
-        }
-        else if (isGroupEW) {
-            // CAMBIO: Antes pedíamos 'posA.z == posB.z' (Cable por X).
-            // AHORA pedimos 'posA.x == posB.x' (Cable por Z).
+        } else if (isGroupEW) {
             return posA.x == posB.x;
         }
-
         return false;
     }
 

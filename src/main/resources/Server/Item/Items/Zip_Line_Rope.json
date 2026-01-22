@@ -1,0 +1,39 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Zip_Line_Rope.name"
+  },
+  "Icon": "Icons/ItemsGenerated/Zip_Line_Rope.png",
+  "Categories": [],
+  "Quality": "Developer",
+  "BlockType": {
+    "Material": "Empty",
+    "DrawType": "Model",
+    "VariantRotation": "Debug",
+    "ParticleColor": "#0000f4",
+    "CustomModel": "Blocks/Marck_Zip_Line/Rope_Zip1.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Marck_Zip_Line/Zip_Line_Texture.png"
+      }
+    ],
+    "Opacity": "Solid"
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Debug"
+    ]
+  },
+  "IconProperties": {
+    "Scale": 0.58823,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  }
+}
