@@ -9,17 +9,6 @@
     "Material": "Empty",
     "DrawType": "Model",
     "VariantRotation": "Debug",
-    "Textures": [
-      {
-        "Weight": 1,
-        "Up": "BlockTextures/_Debug/Up.png",
-        "Down": "BlockTextures/_Debug/Down.png",
-        "North": "BlockTextures/_Debug/North.png",
-        "South": "BlockTextures/_Debug/South.png",
-        "East": "BlockTextures/_Debug/East.png",
-        "West": "BlockTextures/_Debug/West.png"
-      }
-    ],
     "ParticleColor": "#0000f4",
     "CustomModel": "Blocks/Marck_Zip_Line/Rope_Zip1_End.blockymodel",
     "CustomModelTexture": [

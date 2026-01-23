@@ -36,12 +36,19 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                                      @NonNull Vector3i targetPos,
                                      @NonNull CooldownHandler cooldownHandler) {
 
-        if (itemInHand == null || itemInHand.isEmpty() || !itemInHand.getItemId().equals("Guide_Line")) {
-            return;
-        }
+
 
         Player player = (Player) commandBuffer.getComponent(interactionContext.getEntity(), Player.getComponentType());
         ZiplineComponent anchor = (ZiplineComponent) BlockModule.get().getComponent(ZiplineComponent.getComponentType(), world, targetPos.x, targetPos.y, targetPos.z);
+
+        if (itemInHand == null || itemInHand.isEmpty() || !itemInHand.getItemId().equals("Guide_Line")) {
+            assert anchor != null;
+            if(!anchor.isConnected()){
+                assert player != null;
+                player.sendMessage(Message.raw("You need a GuideLine to connect the zip line"));
+            }
+            return;
+        }
 
         if (anchor == null) return;
 
