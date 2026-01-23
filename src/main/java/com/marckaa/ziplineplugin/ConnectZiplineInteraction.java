@@ -113,72 +113,66 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         }
     }
 
+
+
     private void drawCable(World world, Vector3i p1, Vector3i p2) {
         // 1. NORMALIZACIÓN (Low -> High)
         Vector3i low, high;
         if (p1.y < p2.y) { low = p1; high = p2; }
         else { low = p2; high = p1; }
 
-        // Distancias totales en cada eje
         int dx = high.x - low.x;
         int dy = high.y - low.y;
         int dz = high.z - low.z;
 
-        // 2. DETERMINAR EL EJE DOMINANTE (¿Es más largo en X o en Z?)
-        // Esto define cuántos pasos enteros daremos.
         int steps = Math.max(Math.abs(dx), Math.abs(dz));
-
-        // Si steps es 0 (línea vertical pura), evitamos división por cero
         if (steps == 0) return;
 
-        // 3. CÁLCULO DE ROTACIÓN (Tu lógica invertida)
+        // 2. ROTACIÓN
         int rotation;
         if (Math.abs(dx) > Math.abs(dz)) {
-            rotation = (dx > 0) ? 3 : 1; // Eje X
+            rotation = (dx > 0) ? 3 : 1;
         } else {
-            rotation = (dz > 0) ? 2 : 0; // Eje Z
+            rotation = (dz > 0) ? 2 : 0;
         }
 
-        // 4. BUCLE DE PASOS ENTEROS
-        // Iteramos 'k' desde 1 hasta steps-1 (para no tocar el inicio ni el final)
+        // 3. BUCLE DE PASOS
         for (int k = 1; k < steps; k++) {
 
-            // Calculamos la posición exacta interpolando
-            // Usamos 'Math.floor' para asegurar que caemos en el bloque correcto
             int curX = low.x + (dx * k / steps);
             int curZ = low.z + (dz * k / steps);
 
-            // CÁLCULO DE ALTURA INTELIGENTE
-            // yPrev: Altura en el paso anterior
+            // Alturas (3 Puntos)
             int yPrev = low.y + (dy * (k - 1) / steps);
-
-            // yCur: Altura en el paso actual
             int yCur  = low.y + (dy * k / steps);
-
-            // yNext: Altura en el paso siguiente (LOOK AHEAD)
             int yNext = low.y + (dy * (k + 1) / steps);
 
-            // Protección de seguridad
             if (curX == high.x && yCur == high.y && curZ == high.z) break;
 
-            String blockToPlace;
+            String blockName;
 
-            // --- LÓGICA DE DETECCIÓN EXACTA ---
-
-            // 1. Si el siguiente bloque va a ser más alto -> SOY LA BASE (Bottom)
+            // --- LÓGICA DE FORMA (Shape) ---
             if (yCur < yNext) {
-                blockToPlace = "Zip_Line_Rope3"; // Bottom / Base de subida
-            }
-            // 2. Si el bloque anterior era más bajo -> SOY LA CIMA (Top)
-            else if (yCur > yPrev) {
-                blockToPlace = "Zip_Line_Rope2"; // Top / Fin de subida
-            }
-            // 3. Si no hay cambios de altura -> PLANO
-            else {
-                blockToPlace = "Zip_Line_Rope";  // Flat
+                blockName = "Zip_Line_Rope3"; // Bottom (Base de subida)
+            } else if (yCur > yPrev) {
+                blockName = "Zip_Line_Rope2"; // Top (Cima de subida)
+            } else {
+                blockName = "Zip_Line_Rope";  // Flat (Plano)
             }
 
-            setBlock(world, curX, yCur, curZ, blockToPlace, rotation);
+            // --- 4. DETECCIÓN DE EXTREMOS (Start/End) ---
+
+            // Si es el PRIMER bloque (pegado al soporte BAJO)
+            if (k == 1) {
+                blockName += "_Start";
+            }
+            // Si es el ÚLTIMO bloque (pegado al soporte ALTO)
+            else if (k == steps - 1) {
+                blockName += "_End";
+            }
+
+            // Colocamos el bloque final
+            setBlock(world, curX, yCur, curZ, blockName, rotation);
         }
     }
 
