@@ -27,8 +27,6 @@ public class ZiplinePlugin extends JavaPlugin {
         this.ziplineComponentType = this.getChunkStoreRegistry().registerComponent(ZiplineComponent.class, "ZiplineComponent", ZiplineComponent.CODEC);
         this.getCodecRegistry(Interaction.CODEC).register("ConnectZipline", ConnectZiplineInteraction.class, ConnectZiplineInteraction.CODEC);
         this.getChunkStoreRegistry().registerSystem(new ZiplineBreakSystem());
-
-        System.out.println("Zipline Mod cargado.");
     }
 
     public ComponentType<ChunkStore, ZiplineComponent> getZiplineComponentType() {

@@ -51,7 +51,7 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
 
         if (toolData == null || !toolData.hasStartPoint) {
             if (anchor.isConnected()) {
-                player.sendMessage(Message.raw("§cEste soporte ya está ocupado."));
+                player.sendMessage(Message.raw("This support is already taken"));
                 return;
             }
 
@@ -63,60 +63,77 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
 
             ItemStack newItem = itemInHand.withMetadata("GuideData", GuideLineData.CODEC, toolData);
             inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, newItem);
-            player.sendMessage(Message.raw("§aPunto A fijado. Busca un soporte alineado."));
+            player.sendMessage(Message.raw("Point A set. Look for an aligned support."));
         }
         else {
             Vector3i posA = new Vector3i(toolData.x, toolData.y, toolData.z);
             Vector3i posB = targetPos;
 
             if (posA.equals(posB)) {
-                player.sendMessage(Message.raw("§cMismo bloque."));
+                player.sendMessage(Message.raw("Same Block"));
                 return;
             }
             if (anchor.isConnected()) {
-                player.sendMessage(Message.raw("§cDestino ocupado."));
+                player.sendMessage(Message.raw("Taken Support"));
                 return;
             }
             ZiplineComponent anchorA = (ZiplineComponent) BlockModule.get().getComponent(ZiplineComponent.getComponentType(), world, posA.x, posA.y, posA.z);
             if (anchorA == null || anchorA.isConnected()) {
-                player.sendMessage(Message.raw("§cOrigen ocupado o roto."));
+                player.sendMessage(Message.raw("Origin occupied or broken"));
                 inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, itemInHand.withMetadata("GuideData", GuideLineData.CODEC, null));
                 return;
             }
 
             int heightDiff = Math.abs(posA.y - posB.y);
             if (heightDiff < 5) {
-                player.sendMessage(Message.raw("§cError: Necesitas al menos 5 bloques de desnivel."));
+                player.sendMessage(Message.raw("(＃＞＜)  You need at least 5 blocks of unevenness"));
                 return;
             }
 
             double distance = posA.distanceTo(posB);
             if (distance < 10.0) {
-                player.sendMessage(Message.raw("§cError: Demasiado cerca (Min 10)."));
+                player.sendMessage(Message.raw("(＃＞＜)  Too Close (Min 10)."));
                 return;
             }
 
             if (!isAligned(world, posA, posB)) {
-                player.sendMessage(Message.raw("§cError: Los soportes no están alineados con su orientación."));
+                player.sendMessage(Message.raw("(＃＞＜) Supports are not aligned with their orientation"));
+                return;
+            }
+
+            int horizontalDist = Math.max(Math.abs(posA.x - posB.x), Math.abs(posA.z - posB.z));
+
+            if (heightDiff < 5) {
+                player.sendMessage(Message.raw("(＃＞＜) You need at least 5 blocks of unevenness"));
+                return;
+            }
+
+            double totalDistance = posA.distanceTo(posB);
+            if (totalDistance < 10.0) {
+                player.sendMessage(Message.raw("(＃＞＜) Too close (Min 10 total blocks)"));
+                return;
+            }
+
+            if (horizontalDist <= (heightDiff * 2)) {
+                int neededDist = (heightDiff * 2) + 1;
+                player.sendMessage(Message.raw("(；￣Д￣)  Too inclined"));
+                player.sendMessage(Message.raw("For a height of " + heightDiff + ", you need to separate " + neededDist + " Blocks!!"));
                 return;
             }
 
             anchor.setConnection(posA);
             anchorA.setConnection(posB);
 
-            // --- VISUAL CONNECTION ---
             drawCable(world, posA, posB);
 
             ItemStack cleanItem = itemInHand.withMetadata("GuideData", GuideLineData.CODEC, null);
             inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, cleanItem);
-            player.sendMessage(Message.raw("§a¡Tirolina conectada!"));
         }
     }
 
 
 
     private void drawCable(World world, Vector3i p1, Vector3i p2) {
-        // 1. NORMALIZACIÓN (Low -> High)
         Vector3i low, high;
         if (p1.y < p2.y) { low = p1; high = p2; }
         else { low = p2; high = p1; }
@@ -128,7 +145,6 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         int steps = Math.max(Math.abs(dx), Math.abs(dz));
         if (steps == 0) return;
 
-        // 2. ROTACIÓN
         int rotation;
         if (Math.abs(dx) > Math.abs(dz)) {
             rotation = (dx > 0) ? 3 : 1;
@@ -136,13 +152,11 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
             rotation = (dz > 0) ? 2 : 0;
         }
 
-        // 3. BUCLE DE PASOS
         for (int k = 1; k < steps; k++) {
 
             int curX = low.x + (dx * k / steps);
             int curZ = low.z + (dz * k / steps);
 
-            // Alturas (3 Puntos)
             int yPrev = low.y + (dy * (k - 1) / steps);
             int yCur  = low.y + (dy * k / steps);
             int yNext = low.y + (dy * (k + 1) / steps);
@@ -151,32 +165,25 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
 
             String blockName;
 
-            // --- LÓGICA DE FORMA (Shape) ---
             if (yCur < yNext) {
-                blockName = "Zip_Line_Rope3"; // Bottom (Base de subida)
+                blockName = "Zip_Line_Rope3";
             } else if (yCur > yPrev) {
-                blockName = "Zip_Line_Rope2"; // Top (Cima de subida)
+                blockName = "Zip_Line_Rope2";
             } else {
-                blockName = "Zip_Line_Rope";  // Flat (Plano)
+                blockName = "Zip_Line_Rope";
             }
 
-            // --- 4. DETECCIÓN DE EXTREMOS (Start/End) ---
-
-            // Si es el PRIMER bloque (pegado al soporte BAJO)
             if (k == 1) {
                 blockName += "_Start";
             }
-            // Si es el ÚLTIMO bloque (pegado al soporte ALTO)
             else if (k == steps - 1) {
                 blockName += "_End";
             }
 
-            // Colocamos el bloque final
             setBlock(world, curX, yCur, curZ, blockName, rotation);
         }
     }
 
-    // El helper setBlock se mantiene igual que la última vez (usando blockIdOrUnknown)
     private void setBlock(World world, int x, int y, int z, String blockAssetName, int rotation) {
         WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(x, z));
         if (chunk == null || chunk.getBlockChunk() == null) return;
