@@ -5,6 +5,9 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import com.marckaa.ziplineplugin.components.ZiplineComponent;
+import com.marckaa.ziplineplugin.interactions.ConnectZiplineInteraction;
+import com.marckaa.ziplineplugin.interactions.RideZipLineInteraction;
 
 public class ZiplinePlugin extends JavaPlugin {
 
@@ -27,6 +30,8 @@ public class ZiplinePlugin extends JavaPlugin {
         this.ziplineComponentType = this.getChunkStoreRegistry().registerComponent(ZiplineComponent.class, "ZiplineComponent", ZiplineComponent.CODEC);
         this.getCodecRegistry(Interaction.CODEC).register("ConnectZipline", ConnectZiplineInteraction.class, ConnectZiplineInteraction.CODEC);
         this.getChunkStoreRegistry().registerSystem(new ZiplineBreakSystem());
+
+        this.getCodecRegistry(Interaction.CODEC).register("ZipLineRide", RideZipLineInteraction.class, RideZipLineInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, ZiplineComponent> getZiplineComponentType() {

@@ -70,7 +70,8 @@
             "Type": "ConnectZipline"
           }
         ]
-      }
+      },
+      "Secondary": "ZipLineRide"
     },
     "PlacementSettings": {
       "RotationMode": "BlockNormal",

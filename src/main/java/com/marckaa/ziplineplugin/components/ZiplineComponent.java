@@ -1,4 +1,4 @@
-package com.marckaa.ziplineplugin;
+package com.marckaa.ziplineplugin.components;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import com.marckaa.ziplineplugin.ZiplinePlugin;
 import org.jspecify.annotations.Nullable;
 
 public class ZiplineComponent implements Component<ChunkStore> {

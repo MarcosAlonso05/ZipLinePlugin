@@ -1,4 +1,4 @@
-package com.marckaa.ziplineplugin;
+package com.marckaa.ziplineplugin.interactions;
 
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -18,6 +18,8 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.marckaa.ziplineplugin.GuideLineData;
+import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
