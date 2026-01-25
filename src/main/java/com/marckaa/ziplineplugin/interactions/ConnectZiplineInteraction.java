@@ -3,6 +3,7 @@ package com.marckaa.ziplineplugin.interactions;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
@@ -19,6 +20,7 @@ import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.marckaa.ziplineplugin.GuideLineData;
+import com.marckaa.ziplineplugin.components.RideComponent;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -43,16 +45,36 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         Player player = (Player) commandBuffer.getComponent(interactionContext.getEntity(), Player.getComponentType());
         ZiplineComponent anchor = (ZiplineComponent) BlockModule.get().getComponent(ZiplineComponent.getComponentType(), world, targetPos.x, targetPos.y, targetPos.z);
 
+        if (anchor == null) return;
+
+        if (anchor.isConnected() && !itemInHand.getItemId().equals("Guide_Line") && anchor.getTarget() != null) {
+            Vector3i targetB = anchor.getTarget();
+            Vector3i endPos;
+
+            if (targetB.y < targetPos.y) {
+                endPos = targetB;
+            } else {
+                player.sendMessage(Message.raw("You're already downstairs (￣ヘ￣)"));
+                return;
+            }
+
+            Vector3d currentPos = new Vector3d(targetPos.x + 0.5, targetPos.y - 0.5, targetPos.z + 0.5);
+            Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 0.5, endPos.z + 0.5);
+
+            RideComponent rideData = new RideComponent(currentPos, endVec, 0.8);
+
+            commandBuffer.addComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
+
+            player.sendMessage(Message.raw("§e[Soporte] §aZipline OK! §7Destino: " + endPos.x + ", " + endPos.y + ", " + endPos.z));
+        }
+
         if (itemInHand == null || itemInHand.isEmpty() || !itemInHand.getItemId().equals("Guide_Line")) {
-            assert anchor != null;
             if(!anchor.isConnected()){
                 assert player != null;
                 player.sendMessage(Message.raw("You need a GuideLine to connect the zip line"));
             }
             return;
         }
-
-        if (anchor == null) return;
 
         GuideLineData toolData = itemInHand.getFromMetadataOrNull("GuideData", GuideLineData.CODEC);
         Inventory inventory = player.getInventory();
