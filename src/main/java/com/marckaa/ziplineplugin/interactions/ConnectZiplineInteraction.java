@@ -40,32 +40,44 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                                      @NonNull Vector3i targetPos,
                                      @NonNull CooldownHandler cooldownHandler) {
 
-
-
         Player player = (Player) commandBuffer.getComponent(interactionContext.getEntity(), Player.getComponentType());
         ZiplineComponent anchor = (ZiplineComponent) BlockModule.get().getComponent(ZiplineComponent.getComponentType(), world, targetPos.x, targetPos.y, targetPos.z);
 
         if (anchor == null) return;
 
-        if (anchor.isConnected() && !itemInHand.getItemId().equals("Guide_Line") && anchor.getTarget() != null) {
-            Vector3i targetB = anchor.getTarget();
-            Vector3i endPos;
+        boolean isHandEmpty = (itemInHand == null || itemInHand.isEmpty());
+        boolean isNotGuideLine = isHandEmpty || !itemInHand.getItemId().equals("Guide_Line");
 
-            if (targetB.y < targetPos.y) {
-                endPos = targetB;
-            } else {
-                player.sendMessage(Message.raw("You're already downstairs (￣ヘ￣)"));
+        if (isNotGuideLine) {
+
+            if (commandBuffer.getStore().getComponent(interactionContext.getEntity(), RideComponent.getComponentType()) != null) {
+                commandBuffer.removeComponent(interactionContext.getEntity(), RideComponent.getComponentType());
                 return;
             }
 
-            Vector3d currentPos = new Vector3d(targetPos.x + 0.5, targetPos.y - 0.5, targetPos.z + 0.5);
-            Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 0.5, endPos.z + 0.5);
+            if (anchor.isConnected() && anchor.getTarget() != null) {
+                Vector3i targetB = anchor.getTarget();
+                Vector3i endPos;
 
-            RideComponent rideData = new RideComponent(currentPos, endVec, 0.8);
+                if (targetB.y < targetPos.y) {
+                    endPos = targetB;
+                } else {
+                    player.sendMessage(Message.raw("You're already down"));
+                    return;
+                }
 
-            commandBuffer.addComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
+                Vector3d currentPos = new Vector3d(targetPos.x + 0.5, targetPos.y - 0.5, targetPos.z + 0.5);
+                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 0.5, endPos.z + 0.5);
 
-            player.sendMessage(Message.raw("§e[Soporte] §aZipline OK! §7Destino: " + endPos.x + ", " + endPos.y + ", " + endPos.z));
+                RideComponent rideData = new RideComponent(currentPos, endVec, 0.8);
+
+                commandBuffer.putComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
+
+                player.sendMessage(Message.raw("§e[Soporte] §aZipline OK! §7Destino: " + endPos.x + ", " + endPos.y + ", " + endPos.z));
+            } else {
+                player.sendMessage(Message.raw("§7Este soporte no está conectado. Usa la Guide Line."));
+            }
+            return;
         }
 
         if (itemInHand == null || itemInHand.isEmpty() || !itemInHand.getItemId().equals("Guide_Line")) {
