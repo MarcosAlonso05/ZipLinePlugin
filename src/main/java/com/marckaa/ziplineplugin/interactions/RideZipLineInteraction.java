@@ -6,14 +6,18 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
+import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
+import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
+import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.marckaa.ziplineplugin.ZiplineUtils;
@@ -42,12 +46,18 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
 
         Ref<EntityStore> playerRef = context.getEntity();
         if (playerRef == null) return;
-        Store<EntityStore> store = playerRef.getStore();
 
+        Store<EntityStore> store = playerRef.getStore();
         Player playerComp = store.getComponent(playerRef, Player.getComponentType());
 
         if (store.getComponent(playerRef, RideComponent.getComponentType()) != null) {
             commandBuffer.removeComponent(playerRef, RideComponent.getComponentType());
+
+            Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
+            if (velocity != null) {
+                velocity.addInstruction(new Vector3d(0, 0.5, 0), null, ChangeVelocityType.Set);
+            }
+
             return;
         }
 
@@ -55,7 +65,6 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         Vector3i anchorPosA = ZiplineUtils.findConnectedAnchor(world, clickedBlock);
 
         if (anchorPosA == null) {
-            if (playerComp != null) playerComp.sendMessage(Message.raw("Rope without anchor"));
             return;
         }
 
@@ -70,24 +79,39 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         Vector3i anchorPosB = compA.getTarget();
 
         Vector3i endPos;
-        if (anchorPosA.y >= anchorPosB.y) {
+        if (anchorPosA.y > anchorPosB.y) {
             endPos = anchorPosB;
-        } else {
+        } else if (anchorPosA.y < anchorPosB.y) {
             endPos = anchorPosA;
+        } else {
+            return;
         }
 
-        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 0.5, endPos.z + 0.5);
-        Vector3d currentClickPos = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 0.5, clickedBlock.z + 0.5);
+        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 1.5, clickedBlock.z + 0.5);
 
-        RideComponent rideData = new RideComponent(currentClickPos, endVec, 0.8);
+        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.5, endPos.z + 0.5);
+
+        double speed = 15.0;
+
+        RideComponent rideData = new RideComponent(anchorVec, endVec, speed, true);
 
         commandBuffer.putComponent(playerRef, RideComponent.getComponentType(), rideData);
 
-        if (playerComp != null) {
-            playerComp.sendMessage(Message.raw("§e[Cuerda] §aZipline OK! §7Destino: " + endPos.x + ", " + endPos.y));
+        Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
+        TransformComponent playerTransform = store.getComponent(playerRef, TransformComponent.getComponentType());
+
+        if (velocity != null && playerTransform != null) {
+            Vector3d direction = new Vector3d(anchorVec).subtract(playerTransform.getPosition()).normalize().scale(speed);
+
+            velocity.addInstruction(
+                    direction,
+                    (VelocityConfig) null,
+                    ChangeVelocityType.Set
+            );
         }
     }
 
     @Override
-    protected void simulateInteractWithBlock(@NonNull InteractionType type, @NonNull InteractionContext context, @Nullable ItemStack item, @NonNull World world, @NonNull Vector3i target) {}
+    protected void simulateInteractWithBlock(@NonNull InteractionType interactionType, @NonNull InteractionContext interactionContext, @Nullable ItemStack itemStack, @NonNull World world, @NonNull Vector3i vector3i) {
+    }
 }

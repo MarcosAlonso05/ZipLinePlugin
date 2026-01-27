@@ -12,7 +12,11 @@
   ],
   "Website": "https://www.youtube.com/@Marck.A.A",
   "ServerVersion": "${server_version}",
-  "Dependencies": {},
+  "Dependencies": {
+    "Hytale:EntityModule": "*",
+    "Hytale:BlockModule": "*",
+    "Hytale:InteractionModule": "*"
+  },
   "OptionalDependencies": {},
   "DisabledByDefault": false,
   "IncludesAssetPack": true,

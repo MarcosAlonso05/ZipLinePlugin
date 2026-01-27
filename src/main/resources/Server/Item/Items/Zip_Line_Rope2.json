@@ -8,6 +8,15 @@
   "BlockType": {
     "Material": "Empty",
     "DrawType": "Model",
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "ZipLineRide"
+          }
+        ]
+      }
+    },
     "VariantRotation": "Debug",
     "ParticleColor": "#0000f4",
     "CustomModel": "Blocks/Marck_Zip_Line/Rope_Zip2.blockymodel",

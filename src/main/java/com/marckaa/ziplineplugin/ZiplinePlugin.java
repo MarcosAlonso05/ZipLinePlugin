@@ -32,11 +32,14 @@ public class ZiplinePlugin extends JavaPlugin {
         instance = this;
 
         this.ziplineComponentType = this.getChunkStoreRegistry().registerComponent(ZiplineComponent.class, "ZiplineComponent", ZiplineComponent.CODEC);
+        this.rideComponentType = this.getEntityStoreRegistry().registerComponent(RideComponent.class, "RideComponent", RideComponent.CODEC);
+
         this.getCodecRegistry(Interaction.CODEC).register("ConnectZipline", ConnectZiplineInteraction.class, ConnectZiplineInteraction.CODEC);
+        this.getCodecRegistry(Interaction.CODEC).register("ZipLineRide", RideZipLineInteraction.class, RideZipLineInteraction.CODEC);
+
         this.getChunkStoreRegistry().registerSystem(new ZiplineBreakSystem());
 
-        this.getCodecRegistry(Interaction.CODEC).register("ZipLineRide", RideZipLineInteraction.class, RideZipLineInteraction.CODEC);
-        this.rideComponentType = this.getEntityStoreRegistry().registerComponent(RideComponent.class, "RideComponent", RideComponent.CODEC);
+        this.getEntityStoreRegistry().registerSystem(new com.marckaa.ziplineplugin.systems.RideSystem());
     }
 
     public ComponentType<ChunkStore, ZiplineComponent> getZiplineComponentType() {

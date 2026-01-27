@@ -69,9 +69,7 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                 Vector3d currentPos = new Vector3d(targetPos.x + 0.5, targetPos.y - 0.5, targetPos.z + 0.5);
                 Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 0.5, endPos.z + 0.5);
 
-                RideComponent rideData = new RideComponent(currentPos, endVec, 0.8);
 
-                commandBuffer.putComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
 
                 player.sendMessage(Message.raw("§e[Soporte] §aZipline OK! §7Destino: " + endPos.x + ", " + endPos.y + ", " + endPos.z));
             } else {
