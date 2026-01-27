@@ -25,7 +25,9 @@
         "Texture": "Blocks/Marck_Zip_Line/Zip_Line_Texture.png"
       }
     ],
-    "Opacity": "Solid"
+    "Opacity": "Solid",
+    "SupportDropType": "Destroy",
+    "SupportsRequiredFor": "All"
   },
   "PlayerAnimationsId": "Block",
   "Tags": {

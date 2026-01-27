@@ -16,5 +16,6 @@
   },
   "TranslationProperties": {
     "Name": "server.items.Line_Guide.name"
-  }
+  },
+  "MaxStack": 1
 }

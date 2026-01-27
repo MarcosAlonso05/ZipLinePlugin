@@ -84,6 +84,6 @@
     "HitboxType": "Zip_Line"
   },
   "ItemSoundSetId": "ISS_Blocks_Wood",
-  "MaxStack": 10,
+  "MaxStack": 20,
   "PlayerAnimationsId": "Sword"
 }
