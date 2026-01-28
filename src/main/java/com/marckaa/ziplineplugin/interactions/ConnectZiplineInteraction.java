@@ -5,6 +5,7 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
@@ -13,8 +14,11 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
+import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
+import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
+import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
@@ -49,9 +53,12 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         boolean isNotGuideLine = isHandEmpty || !itemInHand.getItemId().equals("Guide_Line");
 
         if (isNotGuideLine) {
-
             if (commandBuffer.getStore().getComponent(interactionContext.getEntity(), RideComponent.getComponentType()) != null) {
                 commandBuffer.removeComponent(interactionContext.getEntity(), RideComponent.getComponentType());
+                Velocity velocity = commandBuffer.getStore().getComponent(interactionContext.getEntity(), Velocity.getComponentType());
+                if (velocity != null) {
+                    velocity.addInstruction(new Vector3d(0, 0.5, 0), null, ChangeVelocityType.Set);
+                }
                 return;
             }
 
@@ -59,29 +66,35 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                 Vector3i targetB = anchor.getTarget();
                 Vector3i endPos;
 
-                if (targetB.y < targetPos.y) {
+                if (targetPos.y > targetB.y) {
                     endPos = targetB;
+                } else if (targetPos.y < targetB.y) {
+                    if (player != null) player.sendMessage(Message.raw("You're already down"));
+                    return;
                 } else {
-                    player.sendMessage(Message.raw("You're already down"));
                     return;
                 }
 
-                Vector3d currentPos = new Vector3d(targetPos.x + 0.5, targetPos.y - 0.5, targetPos.z + 0.5);
-                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 0.5, endPos.z + 0.5);
+                Vector3d anchorVec = new Vector3d(targetPos.x + 0.5, targetPos.y - 1.8, targetPos.z + 0.5);
+                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.8, endPos.z + 0.5);
 
+                double startSpeed = 15.0;
+                double acceleration = 10.0;
+                double maxSpeed = 50.0;
 
+                RideComponent rideData = new RideComponent(anchorVec, endVec, startSpeed, acceleration, maxSpeed, true);
+                commandBuffer.putComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
 
-                player.sendMessage(Message.raw("§e[Soporte] §aZipline OK! §7Destino: " + endPos.x + ", " + endPos.y + ", " + endPos.z));
+                Velocity velocity = commandBuffer.getStore().getComponent(interactionContext.getEntity(), Velocity.getComponentType());
+                TransformComponent transform = commandBuffer.getStore().getComponent(interactionContext.getEntity(), TransformComponent.getComponentType());
+
+                if (velocity != null && transform != null) {
+                    Vector3d direction = new Vector3d(anchorVec).subtract(transform.getPosition()).normalize().scale(startSpeed);
+                    velocity.addInstruction(direction, (VelocityConfig) null, ChangeVelocityType.Set);
+                }
+
             } else {
-                player.sendMessage(Message.raw("§7Este soporte no está conectado. Usa la Guide Line."));
-            }
-            return;
-        }
-
-        if (itemInHand == null || itemInHand.isEmpty() || !itemInHand.getItemId().equals("Guide_Line")) {
-            if(!anchor.isConnected()){
-                assert player != null;
-                player.sendMessage(Message.raw("You need a GuideLine to connect the zip line"));
+                if (player != null) player.sendMessage(Message.raw("Support disconnected, use a Guide Line"));
             }
             return;
         }
@@ -104,7 +117,7 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
 
             ItemStack newItem = itemInHand.withMetadata("GuideData", GuideLineData.CODEC, toolData);
             inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, newItem);
-            player.sendMessage(Message.raw("Point A set. Look for an aligned support."));
+            player.sendMessage(Message.raw("Point A set."));
         }
         else {
             Vector3i posA = new Vector3i(toolData.x, toolData.y, toolData.z);
@@ -127,7 +140,7 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
 
             int heightDiff = Math.abs(posA.y - posB.y);
             if (heightDiff < 5) {
-                player.sendMessage(Message.raw("(＃＞＜)  You need at least 5 blocks of unevenness"));
+                player.sendMessage(Message.raw("(＃＞＜)  Min 5 blocks unevenness"));
                 return;
             }
 
@@ -138,27 +151,13 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
             }
 
             if (!isAligned(world, posA, posB)) {
-                player.sendMessage(Message.raw("(＃＞＜) Supports are not aligned with their orientation"));
+                player.sendMessage(Message.raw("(＃＞＜) Not aligned"));
                 return;
             }
 
             int horizontalDist = Math.max(Math.abs(posA.x - posB.x), Math.abs(posA.z - posB.z));
-
-            if (heightDiff < 5) {
-                player.sendMessage(Message.raw("(＃＞＜) You need at least 5 blocks of unevenness"));
-                return;
-            }
-
-            double totalDistance = posA.distanceTo(posB);
-            if (totalDistance < 10.0) {
-                player.sendMessage(Message.raw("(＃＞＜) Too close (Min 10 total blocks)"));
-                return;
-            }
-
             if (horizontalDist <= (heightDiff * 2)) {
-                int neededDist = (heightDiff * 2) + 1;
                 player.sendMessage(Message.raw("(；￣Д￣)  Too inclined"));
-                player.sendMessage(Message.raw("For a height of " + heightDiff + ", you need to separate " + neededDist + " Blocks!!"));
                 return;
             }
 
@@ -171,8 +170,6 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
             inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, cleanItem);
         }
     }
-
-
 
     private void drawCable(World world, Vector3i p1, Vector3i p2) {
         Vector3i low, high;
@@ -194,10 +191,8 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         }
 
         for (int k = 1; k < steps; k++) {
-
             int curX = low.x + (dx * k / steps);
             int curZ = low.z + (dz * k / steps);
-
             int yPrev = low.y + (dy * (k - 1) / steps);
             int yCur  = low.y + (dy * k / steps);
             int yNext = low.y + (dy * (k + 1) / steps);
@@ -205,21 +200,12 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
             if (curX == high.x && yCur == high.y && curZ == high.z) break;
 
             String blockName;
+            if (yCur < yNext) blockName = "Zip_Line_Rope3";
+            else if (yCur > yPrev) blockName = "Zip_Line_Rope2";
+            else blockName = "Zip_Line_Rope";
 
-            if (yCur < yNext) {
-                blockName = "Zip_Line_Rope3";
-            } else if (yCur > yPrev) {
-                blockName = "Zip_Line_Rope2";
-            } else {
-                blockName = "Zip_Line_Rope";
-            }
-
-            if (k == 1) {
-                blockName += "_Start";
-            }
-            else if (k == steps - 1) {
-                blockName += "_End";
-            }
+            if (k == 1) blockName += "_Start";
+            else if (k == steps - 1) blockName += "_End";
 
             setBlock(world, curX, yCur, curZ, blockName, rotation);
         }
@@ -249,11 +235,8 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         boolean isGroupNS = (rotationIndex == 0 || rotationIndex == 2);
         boolean isGroupEW = (rotationIndex == 1 || rotationIndex == 3);
 
-        if (isGroupNS) {
-            return posA.z == posB.z;
-        } else if (isGroupEW) {
-            return posA.x == posB.x;
-        }
+        if (isGroupNS) return posA.z == posB.z;
+        else if (isGroupEW) return posA.x == posB.x;
         return false;
     }
 

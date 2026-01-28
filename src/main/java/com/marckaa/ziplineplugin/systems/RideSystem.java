@@ -36,8 +36,17 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
 
         if (ride == null || transform == null || velocity == null) return;
 
-        Vector3d currentPos = transform.getPosition();
+        if (!ride.isApproaching() && ride.getSpeed() < ride.getMaxSpeed()) {
+            double newSpeed = ride.getSpeed() + (ride.getAcceleration() * dt);
 
+            if (newSpeed > ride.getMaxSpeed()) {
+                newSpeed = ride.getMaxSpeed();
+            }
+
+            ride.setSpeed(newSpeed);
+        }
+
+        Vector3d currentPos = transform.getPosition();
         Vector3d currentTarget;
 
         if (ride.isApproaching()) {
@@ -63,6 +72,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
         }
 
         Vector3d direction = new Vector3d(currentTarget).subtract(currentPos).normalize();
+
         Vector3d velocityVector = direction.scale(ride.getSpeed());
 
         velocity.addInstruction(
@@ -74,6 +84,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
 
     private void stopRide(CommandBuffer<EntityStore> commandBuffer, Ref<EntityStore> entity, Velocity velocity) {
         velocity.addInstruction(new Vector3d(0, 0, 0), null, ChangeVelocityType.Set);
+
         commandBuffer.removeComponent(entity, RideComponent.getComponentType());
     }
 }

@@ -26,7 +26,12 @@
       }
     ],
     "Opacity": "Solid",
-    "SupportDropType": "Destroy"
+    "SupportDropType": "Break",
+    "Gathering": {
+      "Soft": {
+        "DropList": "Empty"
+      }
+    }
   },
   "PlayerAnimationsId": "Block",
   "Tags": {

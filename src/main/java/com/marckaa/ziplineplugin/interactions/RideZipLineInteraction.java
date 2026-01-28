@@ -52,12 +52,10 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
 
         if (store.getComponent(playerRef, RideComponent.getComponentType()) != null) {
             commandBuffer.removeComponent(playerRef, RideComponent.getComponentType());
-
             Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
             if (velocity != null) {
                 velocity.addInstruction(new Vector3d(0, 0.5, 0), null, ChangeVelocityType.Set);
             }
-
             return;
         }
 
@@ -77,8 +75,8 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         }
 
         Vector3i anchorPosB = compA.getTarget();
-
         Vector3i endPos;
+
         if (anchorPosA.y > anchorPosB.y) {
             endPos = anchorPosB;
         } else if (anchorPosA.y < anchorPosB.y) {
@@ -87,28 +85,24 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
             return;
         }
 
-        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 1.5, clickedBlock.z + 0.5);
+        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 1.7, clickedBlock.z + 0.5);
+        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.7, endPos.z + 0.5);
 
-        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.5, endPos.z + 0.5);
+        double startSpeed = 15.0;
+        double acceleration = 10.0;
+        double maxSpeed = 50.0;
 
-        double speed = 15.0;
-
-        RideComponent rideData = new RideComponent(anchorVec, endVec, speed, true);
-
+        RideComponent rideData = new RideComponent(anchorVec, endVec, startSpeed, acceleration, maxSpeed, true);
         commandBuffer.putComponent(playerRef, RideComponent.getComponentType(), rideData);
 
         Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
         TransformComponent playerTransform = store.getComponent(playerRef, TransformComponent.getComponentType());
 
         if (velocity != null && playerTransform != null) {
-            Vector3d direction = new Vector3d(anchorVec).subtract(playerTransform.getPosition()).normalize().scale(speed);
-
-            velocity.addInstruction(
-                    direction,
-                    (VelocityConfig) null,
-                    ChangeVelocityType.Set
-            );
+            Vector3d direction = new Vector3d(anchorVec).subtract(playerTransform.getPosition()).normalize().scale(startSpeed);
+            velocity.addInstruction(direction, (VelocityConfig) null, ChangeVelocityType.Set);
         }
+
     }
 
     @Override
