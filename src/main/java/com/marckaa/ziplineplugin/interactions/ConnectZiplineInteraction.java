@@ -5,10 +5,12 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
+import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
@@ -30,6 +32,9 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class ConnectZiplineInteraction extends SimpleBlockInteraction {
+
+    private static final String ZIPLINE_ANIMATION = "RideZipLine";
+    private static final AnimationSlot ANIM_SLOT = AnimationSlot.Action;
 
     public ConnectZiplineInteraction() {
         super();
@@ -55,10 +60,14 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
         if (isNotGuideLine) {
             if (commandBuffer.getStore().getComponent(interactionContext.getEntity(), RideComponent.getComponentType()) != null) {
                 commandBuffer.removeComponent(interactionContext.getEntity(), RideComponent.getComponentType());
+
                 Velocity velocity = commandBuffer.getStore().getComponent(interactionContext.getEntity(), Velocity.getComponentType());
                 if (velocity != null) {
                     velocity.addInstruction(new Vector3d(0, 0.5, 0), null, ChangeVelocityType.Set);
                 }
+
+                AnimationUtils.playAnimation(interactionContext.getEntity(), ANIM_SLOT, "Idle", true, commandBuffer);
+
                 return;
             }
 
@@ -75,8 +84,8 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                     return;
                 }
 
-                Vector3d anchorVec = new Vector3d(targetPos.x + 0.5, targetPos.y - 1.8, targetPos.z + 0.5);
-                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.8, endPos.z + 0.5);
+                Vector3d anchorVec = new Vector3d(targetPos.x + 0.5, targetPos.y - 2.0, targetPos.z + 0.5);
+                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 2.0, endPos.z + 0.5);
 
                 double startSpeed = 15.0;
                 double acceleration = 10.0;
@@ -92,6 +101,14 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                     Vector3d direction = new Vector3d(anchorVec).subtract(transform.getPosition()).normalize().scale(startSpeed);
                     velocity.addInstruction(direction, (VelocityConfig) null, ChangeVelocityType.Set);
                 }
+
+                AnimationUtils.playAnimation(
+                        interactionContext.getEntity(),
+                        ANIM_SLOT,
+                        ZIPLINE_ANIMATION,
+                        true,
+                        commandBuffer
+                );
 
             } else {
                 if (player != null) player.sendMessage(Message.raw("Support disconnected, use a Guide Line"));

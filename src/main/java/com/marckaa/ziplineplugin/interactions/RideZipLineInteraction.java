@@ -6,9 +6,11 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -31,6 +33,9 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
     public static final BuilderCodec<RideZipLineInteraction> CODEC = BuilderCodec.builder(RideZipLineInteraction.class,
             RideZipLineInteraction::new, SimpleBlockInteraction.CODEC).build();
 
+    private static final String ZIPLINE_ANIMATION = "RideZipLine";
+    private static final AnimationSlot ANIM_SLOT = AnimationSlot.Action;
+
     public RideZipLineInteraction() {
         super();
     }
@@ -52,41 +57,34 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
 
         if (store.getComponent(playerRef, RideComponent.getComponentType()) != null) {
             commandBuffer.removeComponent(playerRef, RideComponent.getComponentType());
+
             Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
             if (velocity != null) {
                 velocity.addInstruction(new Vector3d(0, 0.5, 0), null, ChangeVelocityType.Set);
             }
+
+            AnimationUtils.playAnimation(playerRef, ANIM_SLOT, "Idle", true, store);
+
             return;
         }
 
         Vector3i clickedBlock = targetBlock;
         Vector3i anchorPosA = ZiplineUtils.findConnectedAnchor(world, clickedBlock);
-
-        if (anchorPosA == null) {
-            return;
-        }
+        if (anchorPosA == null) return;
 
         ZiplineComponent compA = (ZiplineComponent) BlockModule.get().getComponent(
                 ZiplineComponent.getComponentType(), world, anchorPosA.x, anchorPosA.y, anchorPosA.z
         );
-
-        if (compA == null || !compA.isConnected() || compA.getTarget() == null) {
-            return;
-        }
+        if (compA == null || !compA.isConnected() || compA.getTarget() == null) return;
 
         Vector3i anchorPosB = compA.getTarget();
         Vector3i endPos;
+        if (anchorPosA.y > anchorPosB.y) endPos = anchorPosB;
+        else if (anchorPosA.y < anchorPosB.y) endPos = anchorPosA;
+        else return;
 
-        if (anchorPosA.y > anchorPosB.y) {
-            endPos = anchorPosB;
-        } else if (anchorPosA.y < anchorPosB.y) {
-            endPos = anchorPosA;
-        } else {
-            return;
-        }
-
-        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 1.7, clickedBlock.z + 0.5);
-        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.7, endPos.z + 0.5);
+        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 2.0, clickedBlock.z + 0.5);
+        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 2.0, endPos.z + 0.5);
 
         double startSpeed = 15.0;
         double acceleration = 10.0;
@@ -103,6 +101,7 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
             velocity.addInstruction(direction, (VelocityConfig) null, ChangeVelocityType.Set);
         }
 
+        AnimationUtils.playAnimation(playerRef, ANIM_SLOT, ZIPLINE_ANIMATION, true, store);
     }
 
     @Override
