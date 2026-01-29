@@ -10,6 +10,7 @@ import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.AnimationUtils;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
@@ -30,6 +31,8 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
     );
 
     private static final AnimationSlot ANIM_SLOT = AnimationSlot.Action;
+
+    private static final double INERTIA_FACTOR = 0.7;
 
     @Override
     public @Nonnull Query<EntityStore> getQuery() {
@@ -52,12 +55,12 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
         Vector3d direction = new Vector3d(currentTarget).subtract(currentPos).normalize();
 
         if (!ride.isApproaching()) {
-
             Vector3d futurePos = new Vector3d(currentPos).addScaled(direction, 1.0);
             World world = ((EntityStore) store.getExternalData()).getWorld();
 
             if (isPathBlocked(world, futurePos)) {
-                stopRide(commandBuffer, entityRef, velocity);
+                Player player = store.getComponent(entityRef, Player.getComponentType());
+                stopRide(commandBuffer, entityRef, velocity, ride, direction, false);
                 return;
             }
         }
@@ -69,7 +72,6 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
         }
 
         double distSq = currentPos.distanceSquaredTo(currentTarget);
-
         double threshold = ride.isApproaching() ? 0.25 : 0.5;
 
         if (distSq < threshold) {
@@ -78,7 +80,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
                 commandBuffer.putComponent(entityRef, RideComponent.getComponentType(), ride);
                 return;
             } else {
-                stopRide(commandBuffer, entityRef, velocity);
+                stopRide(commandBuffer, entityRef, velocity, ride, direction, true);
                 return;
             }
         }
@@ -110,8 +112,18 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
         return true;
     }
 
-    private void stopRide(CommandBuffer<EntityStore> commandBuffer, Ref<EntityStore> entity, Velocity velocity) {
-        velocity.addInstruction(new Vector3d(0, 0, 0), null, ChangeVelocityType.Set);
+    private void stopRide(CommandBuffer<EntityStore> commandBuffer, Ref<EntityStore> entity, Velocity velocity, RideComponent ride, Vector3d direction, boolean preserveInertia) {
+
+        if (preserveInertia) {
+            double exitSpeed = ride.getSpeed() * INERTIA_FACTOR;
+
+            Vector3d exitVector = direction.scale(exitSpeed);
+
+            velocity.addInstruction(exitVector, (VelocityConfig) null, ChangeVelocityType.Set);
+        } else {
+            velocity.addInstruction(new Vector3d(0, 0, 0), null, ChangeVelocityType.Set);
+        }
+
         commandBuffer.removeComponent(entity, RideComponent.getComponentType());
         AnimationUtils.playAnimation(entity, ANIM_SLOT, "Idle", true, commandBuffer);
     }

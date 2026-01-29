@@ -24,6 +24,10 @@ public class ZiplineBreakSystem extends RefSystem<ChunkStore> {
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason reason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
 
+        if (reason == RemoveReason.UNLOAD) {
+            return;
+        }
+
         ZiplineComponent brokenAnchor = store.getComponent(ref, ZiplineComponent.getComponentType());
 
         if (brokenAnchor != null && brokenAnchor.isConnected()) {

@@ -54,12 +54,20 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         Store<EntityStore> store = playerRef.getStore();
         Player playerComp = store.getComponent(playerRef, Player.getComponentType());
 
-        if (store.getComponent(playerRef, RideComponent.getComponentType()) != null) {
+        RideComponent currentRide = store.getComponent(playerRef, RideComponent.getComponentType());
+        if (currentRide != null) {
             commandBuffer.removeComponent(playerRef, RideComponent.getComponentType());
 
             Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
             if (velocity != null) {
-                velocity.addInstruction(new Vector3d(0, 0.5, 0), null, ChangeVelocityType.Set);
+                Vector3d direction = new Vector3d(currentRide.getEndPos()).subtract(currentRide.getAnchorPos()).normalize();
+
+                double exitSpeed = currentRide.getSpeed() * 0.7;
+                Vector3d exitVelocity = direction.scale(exitSpeed);
+
+                exitVelocity.y += 0.2;
+
+                velocity.addInstruction(exitVelocity, (VelocityConfig) null, ChangeVelocityType.Set);
             }
 
             AnimationUtils.playAnimation(playerRef, ANIM_SLOT, "Idle", true, store);
