@@ -6,6 +6,7 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import org.jspecify.annotations.Nullable;
 
@@ -15,6 +16,88 @@ import java.util.Queue;
 import java.util.Set;
 
 public class ZiplineUtils {
+
+    public static void disconnectNetwork(World world, ZiplineComponent anchorA, Vector3i posA) {
+        if (anchorA == null) return;
+
+        Vector3i posB = anchorA.getTarget();
+
+        anchorA.setDisconnected();
+
+        if (posB != null) {
+            ZiplineComponent anchorB = getZiplineComponent(world, posB);
+            if (anchorB != null) {
+                anchorB.setDisconnected();
+                // Limpieza desde el lado B
+                destroyCableNetwork(world, posB);
+            }
+        }
+
+        // Limpieza desde el lado A
+        destroyCableNetwork(world, posA);
+    }
+
+    /**
+     * Algoritmo de borrado recursivo (Flood Fill).
+     * Sigue la cuerda y borra todo lo que encuentre conectado.
+     */
+    public static void destroyCableNetwork(World world, Vector3i startPoint) {
+        Set<Vector3i> visited = new HashSet<>();
+        Queue<Vector3i> queue = new LinkedList<>();
+
+        addRopeNeighbors(world, startPoint, queue, visited);
+
+        int safetyLimit = 2000;
+        int iterations = 0;
+
+        while (!queue.isEmpty() && iterations < safetyLimit) {
+            Vector3i current = queue.poll();
+            iterations++;
+
+            // --- CORRECCIÓN CLAVE ---
+            // El nombre interno del aire en tu versión es "Empty"
+            world.setBlock(current.x, current.y, current.z, "Empty");
+
+            addRopeNeighbors(world, current, queue, visited);
+        }
+    }
+
+    private static void addRopeNeighbors(World world, Vector3i center, Queue<Vector3i> queue, Set<Vector3i> visited) {
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
+                    if (x == 0 && y == 0 && z == 0) continue;
+
+                    Vector3i neighbor = new Vector3i(center.x + x, center.y + y, center.z + z);
+
+                    if (visited.contains(neighbor)) continue;
+
+                    // Si es una cuerda, la añadimos para borrarla en la siguiente vuelta
+                    if (isRopeBlock(world, neighbor)) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Helpers ---
+
+    public static boolean isRopeType(String blockId) {
+        return blockId != null && blockId.startsWith("Zip_Line_Rope");
+    }
+
+    public static boolean isRopeBlock(World world, Vector3i pos) {
+        WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(pos.x, pos.z));
+        if (chunk == null) return false;
+
+        int blockId = chunk.getBlock(pos.x, pos.y, pos.z);
+        if (blockId == 0) return false; // 0 es Empty/Aire
+
+        BlockType type = BlockType.getAssetMap().getAsset(blockId);
+        return type != null && isRopeType(type.getId());
+    }
 
     public static @Nullable Vector3i findConnectedAnchor(World world, Vector3i startPos) {
         if (getZiplineComponent(world, startPos) != null) {
@@ -27,7 +110,7 @@ public class ZiplineUtils {
         queue.add(startPos);
         visited.add(startPos);
 
-        int safetyLimit = 500;
+        int safetyLimit = 1000;
         int iterations = 0;
 
         while (!queue.isEmpty() && iterations < safetyLimit) {
@@ -40,14 +123,13 @@ public class ZiplineUtils {
             }
 
             if (isRopeBlock(world, current)) {
-                addNeighbors(current, queue, visited);
+                addNeighborsSimple(current, queue, visited);
             }
         }
-
         return null;
     }
 
-    private static @Nullable ZiplineComponent getZiplineComponent(World world, Vector3i pos) {
+    public static @Nullable ZiplineComponent getZiplineComponent(World world, Vector3i pos) {
         return (ZiplineComponent) BlockModule.get().getComponent(
                 ZiplineComponent.getComponentType(),
                 world,
@@ -55,30 +137,15 @@ public class ZiplineUtils {
         );
     }
 
-    private static boolean isRopeBlock(World world, Vector3i pos) {
-        WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(pos.x, pos.z));
-        if (chunk == null) return false;
-
-        int blockId = chunk.getBlock(pos.x, pos.y, pos.z);
-        if (blockId == 0) return false;
-
-        BlockType type = BlockType.getAssetMap().getAsset(blockId);
-        if (type == null) return false;
-
-        String id = type.getId();
-        return id.startsWith("Zip_Line_Rope");
-    }
-
-    private static void addNeighbors(Vector3i current, Queue<Vector3i> queue, Set<Vector3i> visited) {
+    private static void addNeighborsSimple(Vector3i current, Queue<Vector3i> queue, Set<Vector3i> visited) {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -1; z <= 1; z++) {
                     if (x == 0 && y == 0 && z == 0) continue;
-
-                    Vector3i neighbor = new Vector3i(current.x + x, current.y + y, current.z + z);
-                    if (!visited.contains(neighbor)) {
-                        visited.add(neighbor);
-                        queue.add(neighbor);
+                    Vector3i n = new Vector3i(current.x + x, current.y + y, current.z + z);
+                    if (!visited.contains(n)) {
+                        visited.add(n);
+                        queue.add(n);
                     }
                 }
             }

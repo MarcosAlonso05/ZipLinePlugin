@@ -83,8 +83,8 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         else if (anchorPosA.y < anchorPosB.y) endPos = anchorPosA;
         else return;
 
-        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 2.0, clickedBlock.z + 0.5);
-        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 2.0, endPos.z + 0.5);
+        Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 1.9, clickedBlock.z + 0.5);
+        Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.9, endPos.z + 0.5);
 
         double startSpeed = 15.0;
         double acceleration = 10.0;

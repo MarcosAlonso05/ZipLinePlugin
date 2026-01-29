@@ -81,7 +81,8 @@
     "Opacity": "Transparent",
     "ParticleColor": "#63412c",
     "VariantRotation": "NESW",
-    "HitboxType": "Zip_Line"
+    "HitboxType": "Zip_Line",
+    "FlipType": "Symmetric"
   },
   "ItemSoundSetId": "ISS_Blocks_Wood",
   "MaxStack": 20,

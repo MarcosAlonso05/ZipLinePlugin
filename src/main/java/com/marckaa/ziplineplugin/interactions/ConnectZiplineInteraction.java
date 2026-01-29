@@ -84,8 +84,8 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                     return;
                 }
 
-                Vector3d anchorVec = new Vector3d(targetPos.x + 0.5, targetPos.y - 2.0, targetPos.z + 0.5);
-                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 2.0, endPos.z + 0.5);
+                Vector3d anchorVec = new Vector3d(targetPos.x + 0.5, targetPos.y - 2.1, targetPos.z + 0.5);
+                Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 2.1, endPos.z + 0.5);
 
                 double startSpeed = 15.0;
                 double acceleration = 10.0;

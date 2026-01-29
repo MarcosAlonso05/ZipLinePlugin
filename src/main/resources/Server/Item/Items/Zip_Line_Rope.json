@@ -28,9 +28,13 @@
     "Opacity": "Solid",
     "SupportDropType": "Break",
     "SupportsRequiredFor": "All",
+    "Support": {
+      "All": []
+    },
     "Gathering": {
-      "Soft": {
-        "DropList": "Empty"
+      "Breaking": {
+        "DropList": "Empty",
+        "GatherType": "Soils"
       }
     }
   },
