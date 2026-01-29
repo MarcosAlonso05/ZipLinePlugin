@@ -37,11 +37,9 @@ public class ZiplineBreakBlockSystem extends EntityEventSystem<EntityStore, Brea
         Vector3i pos = event.getTargetBlock();
         String brokenBlockId = event.getBlockType().getId();
 
-        // 1. Caso Cuerda
         if (ZiplineUtils.isRopeType(brokenBlockId)) {
             checkNeighborsAndDestroy(world, pos);
         }
-        // 2. Caso Soporte
         else {
             ZiplineComponent anchor = ZiplineUtils.getZiplineComponent(world, pos);
             if (anchor != null && anchor.isConnected()) {

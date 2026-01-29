@@ -1,0 +1,31 @@
+{
+  "Input": [
+    {
+      "Quantity": 30,
+      "ItemId": "Ingredient_Fibre"
+    },
+    {
+      "ResourceTypeId": "Wood_Trunk",
+      "Quantity": 1
+    },
+    {
+      "Quantity": 3,
+      "ItemId": "Ingredient_Tree_Sap"
+    }
+  ],
+  "PrimaryOutput": {
+    "ItemId": "Guide_Line",
+    "Quantity": 1
+  },
+  "BenchRequirement": [
+    {
+      "Type": "Crafting",
+      "Id": "Workbench",
+      "Categories": [
+        "Workbench_Tinkering"
+      ],
+      "RequiredTierLevel": 2
+    }
+  ],
+  "TimeSeconds": 2
+}

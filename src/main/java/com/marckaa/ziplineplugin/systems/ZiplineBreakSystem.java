@@ -31,18 +31,9 @@ public class ZiplineBreakSystem extends RefSystem<ChunkStore> {
             Vector3i targetPos = brokenAnchor.getTarget();
             World world = ((ChunkStore) store.getExternalData()).getWorld();
 
-            // Buscamos el otro soporte (el que estaba conectado a este)
-            // Nota: Para acceder a los componentes de bloque, usamos BlockModule normalmente,
-            // pero aquí solo necesitamos saber si existe para desconectarlo.
-            // ZiplineUtils.destroyCableNetwork se encargará de limpiar la cuerda visualmente.
-
-            // 1. Iniciar la destrucción del cable desde el OTRO extremo (targetPos)
-            // Hacemos esto porque el soporte actual (ref) acaba de romperse, así que es más seguro
-            // empezar a borrar desde el soporte que sigue vivo hacia atrás.
             if (targetPos != null) {
                 ZiplineUtils.destroyCableNetwork(world, targetPos);
 
-                // 2. Desconectar lógicamente el otro soporte
                 ZiplineComponent otherAnchor = ZiplineUtils.getZiplineComponent(world, targetPos);
                 if (otherAnchor != null) {
                     otherAnchor.setDisconnected();

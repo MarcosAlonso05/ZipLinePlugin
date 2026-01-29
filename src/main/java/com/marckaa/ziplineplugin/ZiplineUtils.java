@@ -6,7 +6,6 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
-import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import org.jspecify.annotations.Nullable;
 
@@ -28,19 +27,13 @@ public class ZiplineUtils {
             ZiplineComponent anchorB = getZiplineComponent(world, posB);
             if (anchorB != null) {
                 anchorB.setDisconnected();
-                // Limpieza desde el lado B
                 destroyCableNetwork(world, posB);
             }
         }
 
-        // Limpieza desde el lado A
         destroyCableNetwork(world, posA);
     }
 
-    /**
-     * Algoritmo de borrado recursivo (Flood Fill).
-     * Sigue la cuerda y borra todo lo que encuentre conectado.
-     */
     public static void destroyCableNetwork(World world, Vector3i startPoint) {
         Set<Vector3i> visited = new HashSet<>();
         Queue<Vector3i> queue = new LinkedList<>();
@@ -54,8 +47,6 @@ public class ZiplineUtils {
             Vector3i current = queue.poll();
             iterations++;
 
-            // --- CORRECCIÓN CLAVE ---
-            // El nombre interno del aire en tu versión es "Empty"
             world.setBlock(current.x, current.y, current.z, "Empty");
 
             addRopeNeighbors(world, current, queue, visited);
@@ -72,7 +63,6 @@ public class ZiplineUtils {
 
                     if (visited.contains(neighbor)) continue;
 
-                    // Si es una cuerda, la añadimos para borrarla en la siguiente vuelta
                     if (isRopeBlock(world, neighbor)) {
                         visited.add(neighbor);
                         queue.add(neighbor);
@@ -82,7 +72,6 @@ public class ZiplineUtils {
         }
     }
 
-    // --- Helpers ---
 
     public static boolean isRopeType(String blockId) {
         return blockId != null && blockId.startsWith("Zip_Line_Rope");
@@ -93,7 +82,7 @@ public class ZiplineUtils {
         if (chunk == null) return false;
 
         int blockId = chunk.getBlock(pos.x, pos.y, pos.z);
-        if (blockId == 0) return false; // 0 es Empty/Aire
+        if (blockId == 0) return false;
 
         BlockType type = BlockType.getAssetMap().getAsset(blockId);
         return type != null && isRopeType(type.getId());

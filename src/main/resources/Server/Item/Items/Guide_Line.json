@@ -18,5 +18,14 @@
     "Description": "server.items.Line_Guide.description",
     "Name": "server.items.Line_Guide.name"
   },
-  "MaxStack": 1
+  "MaxStack": 1,
+  "BlockType": {
+    "DrawType": "Model",
+    "CustomModel": "Blocks/Marck_Zip_Line/Guide_Line.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Marck_Zip_Line/Guide_Line_Texture.png"
+      }
+    ]
+  }
 }

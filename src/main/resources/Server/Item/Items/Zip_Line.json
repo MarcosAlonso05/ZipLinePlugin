@@ -23,23 +23,6 @@
     "Primary": "Block_Primary",
     "Secondary": "Block_Secondary"
   },
-  "Recipe": {
-    "Input": [
-      {
-        "ResourceTypeId": "Wood_Lightwood_Softwood"
-      }
-    ],
-    "BenchRequirement": [
-      {
-        "Id": "Builders",
-        "Type": "Crafting",
-        "Categories": [
-          "Ladder"
-        ]
-      }
-    ],
-    "OutputQuantity": 2
-  },
   "BlockType": {
     "BlockParticleSetId": "Wood",
     "BlockSoundSetId": "Wood",
@@ -94,6 +77,5 @@
     }
   },
   "ItemSoundSetId": "ISS_Blocks_Wood",
-  "MaxStack": 20,
-  "PlayerAnimationsId": "Sword"
+  "MaxStack": 20
 }

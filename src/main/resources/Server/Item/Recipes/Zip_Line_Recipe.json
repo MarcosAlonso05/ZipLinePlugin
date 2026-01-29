@@ -1,0 +1,27 @@
+{
+  "Input": [
+    {
+      "Quantity": 5,
+      "ItemId": "Ingredient_Fibre"
+    },
+    {
+      "ResourceTypeId": "Wood_Trunk",
+      "Quantity": 5
+    }
+  ],
+  "PrimaryOutput": {
+    "ItemId": "Zip_Line",
+    "Quantity": 1
+  },
+  "BenchRequirement": [
+    {
+      "Type": "Crafting",
+      "Id": "Workbench",
+      "Categories": [
+        "Workbench_Tinkering"
+      ],
+      "RequiredTierLevel": 2
+    }
+  ],
+  "TimeSeconds": 2
+}

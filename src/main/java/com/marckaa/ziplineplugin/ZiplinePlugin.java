@@ -11,7 +11,7 @@ import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import com.marckaa.ziplineplugin.interactions.ConnectZiplineInteraction;
 import com.marckaa.ziplineplugin.interactions.RideZipLineInteraction;
 import com.marckaa.ziplineplugin.systems.RideSystem;
-import com.marckaa.ziplineplugin.systems.ZiplineBreakBlockSystem; // Importar el nuevo sistema
+import com.marckaa.ziplineplugin.systems.ZiplineBreakBlockSystem;
 import com.marckaa.ziplineplugin.systems.ZiplineBreakSystem;
 
 public class ZiplinePlugin extends JavaPlugin {
@@ -28,20 +28,15 @@ public class ZiplinePlugin extends JavaPlugin {
     protected void setup() {
         instance = this;
 
-        // Registros de componentes
         this.ziplineComponentType = this.getChunkStoreRegistry().registerComponent(ZiplineComponent.class, "ZiplineComponent", ZiplineComponent.CODEC);
         this.rideComponentType = this.getEntityStoreRegistry().registerComponent(RideComponent.class, "RideComponent", RideComponent.CODEC);
 
-        // Registros de interacciones
         this.getCodecRegistry(Interaction.CODEC).register("ConnectZipline", ConnectZiplineInteraction.class, ConnectZiplineInteraction.CODEC);
         this.getCodecRegistry(Interaction.CODEC).register("ZipLineRide", RideZipLineInteraction.class, RideZipLineInteraction.CODEC);
 
-        // Registros de sistemas
         this.getChunkStoreRegistry().registerSystem(new ZiplineBreakSystem());
         this.getEntityStoreRegistry().registerSystem(new RideSystem());
 
-        // --- AQUÍ EL CAMBIO ---
-        // Registramos el sistema de evento de entidad en lugar del listener
         this.getEntityStoreRegistry().registerSystem(new ZiplineBreakBlockSystem());
     }
 
