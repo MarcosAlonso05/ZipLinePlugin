@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.Zip_Line.name"
+    "Name": "server.items.Zip_Line.name",
+    "Description": "server.items.Zip_Line.description"
   },
   "Categories": [
     "Items.Tools"
@@ -82,7 +83,15 @@
     "ParticleColor": "#63412c",
     "VariantRotation": "NESW",
     "HitboxType": "Zip_Line",
-    "FlipType": "Symmetric"
+    "FlipType": "Symmetric",
+    "Support": {
+      "CardinalDirections": [
+        {
+          "FaceType": "Full",
+          "MatchSelf": "Ignored"
+        }
+      ]
+    }
   },
   "ItemSoundSetId": "ISS_Blocks_Wood",
   "MaxStack": 20,

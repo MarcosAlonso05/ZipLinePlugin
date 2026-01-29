@@ -1,4 +1,4 @@
-package com.marckaa.ziplineplugin;
+package com.marckaa.ziplineplugin.systems;
 
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -6,6 +6,7 @@ import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import com.marckaa.ziplineplugin.ZiplineUtils;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import org.jspecify.annotations.NonNull;
 

@@ -91,7 +91,14 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                 double acceleration = 10.0;
                 double maxSpeed = 50.0;
 
-                RideComponent rideData = new RideComponent(anchorVec, endVec, startSpeed, acceleration, maxSpeed, true);
+                RideComponent rideData = new RideComponent(
+                        anchorVec,
+                        endVec,
+                        startSpeed,
+                        acceleration,
+                        maxSpeed,
+                        true // isApproaching
+                );
                 commandBuffer.putComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
 
                 Velocity velocity = commandBuffer.getStore().getComponent(interactionContext.getEntity(), Velocity.getComponentType());

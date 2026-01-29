@@ -15,6 +15,7 @@
     ]
   },
   "TranslationProperties": {
+    "Description": "server.items.Line_Guide.description",
     "Name": "server.items.Line_Guide.name"
   },
   "MaxStack": 1

@@ -90,7 +90,14 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         double acceleration = 10.0;
         double maxSpeed = 50.0;
 
-        RideComponent rideData = new RideComponent(anchorVec, endVec, startSpeed, acceleration, maxSpeed, true);
+        RideComponent rideData = new RideComponent(
+                anchorVec,
+                endVec,
+                startSpeed,
+                acceleration,
+                maxSpeed,
+                true
+        );
         commandBuffer.putComponent(playerRef, RideComponent.getComponentType(), rideData);
 
         Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());

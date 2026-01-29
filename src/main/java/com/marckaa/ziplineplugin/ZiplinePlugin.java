@@ -12,6 +12,7 @@ import com.marckaa.ziplineplugin.interactions.ConnectZiplineInteraction;
 import com.marckaa.ziplineplugin.interactions.RideZipLineInteraction;
 import com.marckaa.ziplineplugin.systems.RideSystem;
 import com.marckaa.ziplineplugin.systems.ZiplineBreakBlockSystem; // Importar el nuevo sistema
+import com.marckaa.ziplineplugin.systems.ZiplineBreakSystem;
 
 public class ZiplinePlugin extends JavaPlugin {
 

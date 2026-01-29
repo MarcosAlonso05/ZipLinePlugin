@@ -14,9 +14,9 @@ public class RideComponent implements Component<EntityStore> {
 
     private Vector3d anchorPos;
     private Vector3d endPos;
-    private double speed;          // Velocidad actual
-    private double acceleration;   // Cuánto aumenta por segundo
-    private double maxSpeed;       // Límite de velocidad
+    private double speed;
+    private double acceleration;
+    private double maxSpeed;
     private boolean isApproaching;
 
     public RideComponent() {}
@@ -41,14 +41,8 @@ public class RideComponent implements Component<EntityStore> {
     public double getMaxSpeed() { return maxSpeed; }
     public boolean isApproaching() { return isApproaching; }
 
-    public void setApproaching(boolean approaching) {
-        this.isApproaching = approaching;
-    }
-
-    // Necesitamos poder cambiar la velocidad en el sistema
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
+    public void setApproaching(boolean approaching) { this.isApproaching = approaching; }
+    public void setSpeed(double speed) { this.speed = speed; }
 
     public static final BuilderCodec<RideComponent> CODEC = BuilderCodec.builder(RideComponent.class, RideComponent::new)
             .append(new KeyedCodec<>("Anchor", Vector3d.CODEC), (c, v) -> c.anchorPos = v, c -> c.anchorPos).add()

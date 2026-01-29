@@ -1,4 +1,6 @@
-items.Zip_Line.name = Zip Line
-items.Line_Guide.name = Line Guide
+items.Zip_Line.name = Zip Line Support
+items.Line_Guide.name = Guide Line
 items.Zip_Line_Rope.name = Zip Line Rope
 items.Zip_Line_Rope2.name = Zip Line Rope Diagonal
+items.Zip_Line.description = Use a Guide Line to conect the two supports
+items.Line_Guide.description = This is use to connect two Zip Line Supports
