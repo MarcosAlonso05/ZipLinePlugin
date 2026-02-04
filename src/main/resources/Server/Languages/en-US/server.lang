@@ -1,6 +1,9 @@
 items.Zip_Line.name = Zip Line Support
 items.Line_Guide.name = Guide Line
+items.ZipLine_Tensor.name = Tensor
 items.Zip_Line_Rope.name = Zip Line Rope
 items.Zip_Line_Rope2.name = Zip Line Rope Diagonal
+
 items.Zip_Line.description = Use a Guide Line to conect the two supports
 items.Line_Guide.description = This is use to connect two Zip Line Supports
+items.ZipLine_Tensor.description = Use this in a Zip Line. Right Click + speed, Left Click - speed

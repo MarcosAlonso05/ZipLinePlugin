@@ -11,6 +11,7 @@ import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
@@ -31,8 +32,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
     );
 
     private static final AnimationSlot ANIM_SLOT = AnimationSlot.Action;
-
-    private static final double INERTIA_FACTOR = 0.7;
+    private static final double INERTIA_FACTOR = 0.3;
 
     @Override
     public @Nonnull Query<EntityStore> getQuery() {
@@ -49,9 +49,19 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
 
         if (ride == null || transform == null || velocity == null) return;
 
+        MovementStatesComponent moveStates = store.getComponent(entityRef, MovementStatesComponent.getComponentType());
+
+        if (moveStates != null && moveStates.getMovementStates().crouching) {
+            Vector3d currentPos = transform.getPosition();
+            Vector3d currentTarget = ride.isApproaching() ? ride.getAnchorPos() : ride.getEndPos();
+            Vector3d direction = new Vector3d(currentTarget).subtract(currentPos).normalize();
+
+            stopRide(commandBuffer, entityRef, velocity, ride, direction, true);
+            return;
+        }
+
         Vector3d currentPos = transform.getPosition();
         Vector3d currentTarget = ride.isApproaching() ? ride.getAnchorPos() : ride.getEndPos();
-
         Vector3d direction = new Vector3d(currentTarget).subtract(currentPos).normalize();
 
         if (!ride.isApproaching()) {
@@ -116,8 +126,9 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
 
         if (preserveInertia) {
             double exitSpeed = ride.getSpeed() * INERTIA_FACTOR;
-
             Vector3d exitVector = direction.scale(exitSpeed);
+
+            exitVector.y += 0.2;
 
             velocity.addInstruction(exitVector, (VelocityConfig) null, ChangeVelocityType.Set);
         } else {

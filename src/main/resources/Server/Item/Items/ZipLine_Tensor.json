@@ -1,0 +1,100 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Tool_Shears_Basic.name",
+    "Description": "server.items.Tool_Shears_Basic.description"
+  },
+  "Categories": [
+    "Items.Tools"
+  ],
+  "ItemLevel": 16,
+  "Recipe": {
+    "TimeSeconds": 2,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 1
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Farming"
+        ],
+        "Id": "Farmingbench"
+      }
+    ]
+  },
+  "Set": "Tool_Iron",
+  "Model": "Blocks/Marck_Zip_Line/ZipLine_Tensor.blockymodel",
+  "Texture": "Blocks/Marck_Zip_Line/Tensor_Texture.png",
+  "Quality": "Common",
+  "Interactions": {
+    "Primary": {
+      "Cooldown": {
+        "Id": "Shearing",
+        "Cooldown": 0.2
+      },
+      "Interactions": [
+        {
+          "Type": "ContextualUseNPC",
+          "Effects": {
+            "ItemAnimationId": "Shear",
+            "WaitForAnimationToFinish": true,
+            "WorldSoundEventId": "SFX_Shears_Activate"
+          },
+          "Context": "Shear",
+          "Failed": "Shears_Attack"
+        }
+      ]
+    },
+    "Secondary": {
+      "Cooldown": {
+        "Id": "Shearing",
+        "Cooldown": 0.2
+      },
+      "Interactions": [
+        {
+          "Type": "ContextualUseNPC",
+          "Context": "Shear",
+          "Effects": {
+            "ItemAnimationId": "Shear",
+            "WaitForAnimationToFinish": true,
+            "WorldSoundEventId": "SFX_Shears_Activate"
+          },
+          "Failed": "Shears_Attack"
+        }
+      ]
+    }
+  },
+  "IconProperties": {
+    "Scale": 0.8,
+    "Rotation": [
+      18,
+      356,
+      13
+    ],
+    "Translation": [
+      11,
+      -11.4
+    ]
+  },
+  "Icon": "Icons/ItemsGenerated/ZipLine_Tensor.png",
+  "DroppedItemAnimation": "Items/Animations/Dropped/Dropped_Diagonal_Left.blockyanim",
+  "PlayerAnimationsId": "Tensor",
+  "Tags": {
+    "Type": [
+      "Tool"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Weapons_Wood",
+  "BlockType": {
+    "CustomModel": "Blocks/Marck_Zip_Line/ZipLine_Tensor.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Marck_Zip_Line/Tensor_Texture.png"
+      }
+    ],
+    "DrawType": "Model"
+  }
+}

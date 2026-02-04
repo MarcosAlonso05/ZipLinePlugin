@@ -1,8 +1,4 @@
 {
-  "TranslationProperties": {
-    "Name": "server.items.Zip_Line.name",
-    "Description": "server.items.Zip_Line.description"
-  },
   "Categories": [
     "Items.Tools"
   ],
@@ -77,5 +73,9 @@
     }
   },
   "ItemSoundSetId": "ISS_Blocks_Wood",
-  "MaxStack": 20
+  "MaxStack": 20,
+  "TranslationProperties": {
+    "Name": "server.items.Zip_Line.name",
+    "Description": "server.items.Zip_Line.description"
+  }
 }
