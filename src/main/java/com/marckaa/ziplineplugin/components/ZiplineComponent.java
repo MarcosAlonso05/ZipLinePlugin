@@ -14,6 +14,7 @@ public class ZiplineComponent implements Component<ChunkStore> {
 
     private Vector3i target;
     private boolean isConnected = false;
+    private double speed = 10.0;
 
     public ZiplineComponent() {}
 
@@ -31,14 +32,16 @@ public class ZiplineComponent implements Component<ChunkStore> {
         this.isConnected = false;
     }
 
+    public double getSpeed() { return speed; }
+    public void setSpeed(double speed) { this.speed = speed; }
+
     public Vector3i getTarget() { return target; }
     public boolean isConnected() { return isConnected; }
 
     public static final BuilderCodec<ZiplineComponent> CODEC = BuilderCodec.builder(ZiplineComponent.class, ZiplineComponent::new)
-            .append(new KeyedCodec<>("Target", Vector3i.CODEC), (c, v) -> c.target = v, c -> c.target)
-            .add()
-            .append(new KeyedCodec<>("IsConnected", Codec.BOOLEAN), (c, v) -> c.isConnected = v, c -> c.isConnected)
-            .add()
+            .append(new KeyedCodec<>("Target", Vector3i.CODEC), (c, v) -> c.target = v, c -> c.target).add()
+            .append(new KeyedCodec<>("IsConnected", Codec.BOOLEAN), (c, v) -> c.isConnected = v, c -> c.isConnected).add()
+            .append(new KeyedCodec<>("Speed", Codec.DOUBLE), (c, v) -> c.speed = v, c -> c.speed).add()
             .build();
 
     @Override
@@ -48,6 +51,7 @@ public class ZiplineComponent implements Component<ChunkStore> {
             copy.target = new Vector3i(this.target.x, this.target.y, this.target.z);
         }
         copy.isConnected = this.isConnected;
+        copy.speed = this.speed;
         return copy;
     }
 

@@ -1,0 +1,7 @@
+{
+  "Type": "Simple",
+  "Effects": {
+    "ItemAnimationId": "Tensor",
+    "WorldSoundEventId": "SFX_Shears_Activate"
+  }
+}

@@ -32,7 +32,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
     );
 
     private static final AnimationSlot ANIM_SLOT = AnimationSlot.Action;
-    private static final double INERTIA_FACTOR = 0.3;
+    private static final double INERTIA_FACTOR = 0.2;
 
     @Override
     public @Nonnull Query<EntityStore> getQuery() {

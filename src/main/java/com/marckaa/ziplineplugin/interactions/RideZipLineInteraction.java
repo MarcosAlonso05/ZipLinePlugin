@@ -84,6 +84,8 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         );
         if (compA == null || !compA.isConnected() || compA.getTarget() == null) return;
 
+        double startSpeed = compA.getSpeed();
+
         Vector3i anchorPosB = compA.getTarget();
         Vector3i endPos;
         if (anchorPosA.y > anchorPosB.y) endPos = anchorPosB;
@@ -93,9 +95,8 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         Vector3d anchorVec = new Vector3d(clickedBlock.x + 0.5, clickedBlock.y - 1.9, clickedBlock.z + 0.5);
         Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 1.9, endPos.z + 0.5);
 
-        double startSpeed = 15.0;
-        double acceleration = 10.0;
-        double maxSpeed = 50.0;
+        double acceleration = 7.0;
+        double maxSpeed = 40.0;
 
         RideComponent rideData = new RideComponent(
                 anchorVec,

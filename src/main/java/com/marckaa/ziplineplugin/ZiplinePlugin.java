@@ -10,6 +10,7 @@ import com.marckaa.ziplineplugin.components.RideComponent;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
 import com.marckaa.ziplineplugin.interactions.ConnectZiplineInteraction;
 import com.marckaa.ziplineplugin.interactions.RideZipLineInteraction;
+import com.marckaa.ziplineplugin.interactions.TensorInteraction;
 import com.marckaa.ziplineplugin.systems.RideSystem;
 import com.marckaa.ziplineplugin.systems.ZiplineBreakBlockSystem;
 import com.marckaa.ziplineplugin.systems.ZiplineBreakSystem;
@@ -33,6 +34,7 @@ public class ZiplinePlugin extends JavaPlugin {
 
         this.getCodecRegistry(Interaction.CODEC).register("ConnectZipline", ConnectZiplineInteraction.class, ConnectZiplineInteraction.CODEC);
         this.getCodecRegistry(Interaction.CODEC).register("ZipLineRide", RideZipLineInteraction.class, RideZipLineInteraction.CODEC);
+        this.getCodecRegistry(Interaction.CODEC).register("TensorInteract", TensorInteraction.class, TensorInteraction.CODEC);
 
         this.getChunkStoreRegistry().registerSystem(new ZiplineBreakSystem());
         this.getEntityStoreRegistry().registerSystem(new RideSystem());

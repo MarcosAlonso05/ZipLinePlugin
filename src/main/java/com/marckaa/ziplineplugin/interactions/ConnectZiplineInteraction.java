@@ -87,9 +87,9 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                 Vector3d anchorVec = new Vector3d(targetPos.x + 0.5, targetPos.y - 2.1, targetPos.z + 0.5);
                 Vector3d endVec = new Vector3d(endPos.x + 0.5, endPos.y - 2.1, endPos.z + 0.5);
 
-                double startSpeed = 15.0;
-                double acceleration = 10.0;
-                double maxSpeed = 50.0;
+                double startSpeed = anchor.getSpeed();
+                double acceleration = 7.0;
+                double maxSpeed = 40.0;
 
                 RideComponent rideData = new RideComponent(
                         anchorVec,
@@ -97,7 +97,7 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                         startSpeed,
                         acceleration,
                         maxSpeed,
-                        true // isApproaching
+                        true
                 );
                 commandBuffer.putComponent(interactionContext.getEntity(), RideComponent.getComponentType(), rideData);
 
@@ -184,6 +184,22 @@ public class ConnectZiplineInteraction extends SimpleBlockInteraction {
                 player.sendMessage(Message.raw("(；￣Д￣)  Too inclined"));
                 return;
             }
+
+            int requiredAmount = (int) Math.ceil(posA.distanceTo(posB) * 0.8);
+            String materialId = "Ingredient_Fibre";
+
+            var container = player.getInventory().getCombinedHotbarFirst();
+
+            int available = container.countItemStacks(stack -> stack.getItemId().equals(materialId));
+
+            if (available < requiredAmount) {
+                player.sendMessage(Message.raw("You don't have enough fiber. You need: " + requiredAmount));
+                inventory.getHotbar().replaceItemStackInSlot((short)slot, itemInHand, itemInHand.withMetadata("GuideData", GuideLineData.CODEC, null));
+                return;
+            }
+
+            container.removeItemStack(new ItemStack(materialId, requiredAmount));
+
 
             anchor.setConnection(posA);
             anchorA.setConnection(posB);
