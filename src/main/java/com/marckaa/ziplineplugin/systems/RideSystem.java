@@ -8,6 +8,7 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -71,6 +72,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
             if (isPathBlocked(world, futurePos)) {
                 Player player = store.getComponent(entityRef, Player.getComponentType());
                 stopRide(commandBuffer, entityRef, velocity, ride, direction, false);
+                player.sendMessage(Message.raw("Blocked path or very low height, you let go the Zip Line!!"));
                 return;
             }
         }

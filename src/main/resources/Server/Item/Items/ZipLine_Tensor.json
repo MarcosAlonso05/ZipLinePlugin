@@ -51,6 +51,7 @@
     ]
   },
   "Icon": "Icons/ItemsGenerated/ZipLine_Tensor.png",
+  "MaxStack": 1,
   "DroppedItemAnimation": "Items/Animations/Dropped/Dropped_Diagonal_Left.blockyanim",
   "PlayerAnimationsId": "Tensor",
   "Tags": {

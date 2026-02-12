@@ -1,0 +1,11 @@
+{
+  "AnimationSet": {
+    "Animations": [
+      {
+        "Animation": "Characters/Animations/ZipLineAnimation.blockyanim",
+        "Looping": true,
+        "Speed": 1.0
+      }
+    ]
+  }
+}
