@@ -4,14 +4,13 @@ import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3i;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
+import com.hypixel.hytale.math.vector.Vector3dUtil;
 import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.AnimationUtils;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
@@ -33,7 +32,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
     );
 
     private static final AnimationSlot ANIM_SLOT = AnimationSlot.Action;
-    private static final double INERTIA_FACTOR = 0.2;
+    private static final double INERTIA_FACTOR = 0.3;
 
     @Override
     public @Nonnull Query<EntityStore> getQuery() {
@@ -55,7 +54,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
         if (moveStates != null && moveStates.getMovementStates().crouching) {
             Vector3d currentPos = transform.getPosition();
             Vector3d currentTarget = ride.isApproaching() ? ride.getAnchorPos() : ride.getEndPos();
-            Vector3d direction = new Vector3d(currentTarget).subtract(currentPos).normalize();
+            Vector3d direction = new Vector3d(currentTarget).sub(currentPos).normalize();
 
             stopRide(commandBuffer, entityRef, velocity, ride, direction, true);
             return;
@@ -63,16 +62,14 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
 
         Vector3d currentPos = transform.getPosition();
         Vector3d currentTarget = ride.isApproaching() ? ride.getAnchorPos() : ride.getEndPos();
-        Vector3d direction = new Vector3d(currentTarget).subtract(currentPos).normalize();
+        Vector3d direction = new Vector3d(currentTarget).sub(currentPos).normalize();
 
         if (!ride.isApproaching()) {
-            Vector3d futurePos = new Vector3d(currentPos).addScaled(direction, 1.0);
+            Vector3d futurePos = new Vector3d(currentPos).add(new Vector3d(direction).mul(1.0));
             World world = ((EntityStore) store.getExternalData()).getWorld();
 
             if (isPathBlocked(world, futurePos)) {
-                Player player = store.getComponent(entityRef, Player.getComponentType());
                 stopRide(commandBuffer, entityRef, velocity, ride, direction, false);
-                player.sendMessage(Message.raw("Blocked path or very low height, you let go the Zip Line!!"));
                 return;
             }
         }
@@ -83,7 +80,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
             ride.setSpeed(newSpeed);
         }
 
-        double distSq = currentPos.distanceSquaredTo(currentTarget);
+        double distSq = currentPos.distanceSquared(currentTarget);
         double threshold = ride.isApproaching() ? 0.25 : 0.5;
 
         if (distSq < threshold) {
@@ -97,12 +94,12 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
             }
         }
 
-        Vector3d velocityVector = direction.scale(ride.getSpeed());
+        Vector3d velocityVector = new Vector3d(direction).mul(ride.getSpeed());
         velocity.addInstruction(velocityVector, (VelocityConfig) null, ChangeVelocityType.Set);
     }
 
     private boolean isPathBlocked(World world, Vector3d pos) {
-        Vector3i feetBlock = pos.toVector3i();
+        Vector3i feetBlock = Vector3dUtil.toVector3i(pos);
         Vector3i headBlock = new Vector3i(feetBlock.x, feetBlock.y + 1, feetBlock.z);
 
         if (isSolidObstacle(world, headBlock)) return true;
@@ -128,7 +125,7 @@ public class RideSystem extends EntityTickingSystem<EntityStore> {
 
         if (preserveInertia) {
             double exitSpeed = ride.getSpeed() * INERTIA_FACTOR;
-            Vector3d exitVector = direction.scale(exitSpeed);
+            Vector3d exitVector = new Vector3d(direction).mul(exitSpeed);
 
             exitVector.y += 0.2;
 

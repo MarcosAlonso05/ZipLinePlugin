@@ -2,20 +2,22 @@ package com.marckaa.ziplineplugin.interactions;
 
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.component.Ref;
+import org.joml.Vector3i;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.marckaa.ziplineplugin.ZiplineUtils;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class TensorInteraction extends SimpleBlockInteraction {
 
@@ -26,16 +28,16 @@ public class TensorInteraction extends SimpleBlockInteraction {
     }
 
     @Override
-    protected void interactWithBlock(@NonNull World world,
-                                     @NonNull CommandBuffer<EntityStore> commandBuffer,
-                                     @NonNull InteractionType interactionType,
-                                     @NonNull InteractionContext context,
+    protected void interactWithBlock(@Nonnull World world,
+                                     @Nonnull CommandBuffer<EntityStore> commandBuffer,
+                                     @Nonnull InteractionType interactionType,
+                                     @Nonnull InteractionContext context,
                                      @Nullable ItemStack itemInHand,
-                                     @NonNull Vector3i targetBlock,
-                                     @NonNull CooldownHandler cooldownHandler) {
+                                     @Nonnull Vector3i targetBlock,
+                                     @Nonnull CooldownHandler cooldownHandler) {
 
-        Player player = (Player) commandBuffer.getComponent(context.getEntity(), Player.getComponentType());
-        if (player == null) return;
+        Ref<EntityStore> entityRef = context.getEntity();
+        PlayerRef playerRef = (PlayerRef) commandBuffer.getComponent(entityRef, PlayerRef.getComponentType());
 
         ZiplineComponent anchor = ZiplineUtils.getZiplineComponent(world, targetBlock);
 
@@ -64,12 +66,12 @@ public class TensorInteraction extends SimpleBlockInteraction {
 
         if (newSpeed != currentSpeed) {
             anchor.setSpeed(newSpeed);
-            player.sendMessage(Message.raw("The speed was adjusted to " + newSpeed));
+            if (playerRef != null) playerRef.sendMessage(Message.raw("The speed was adjusted to " + newSpeed));
         } else {
-            player.sendMessage(Message.raw("Limit reached"));
+            if (playerRef != null) playerRef.sendMessage(Message.raw("Limit reached"));
         }
     }
 
     @Override
-    protected void simulateInteractWithBlock(@NonNull InteractionType interactionType, @NonNull InteractionContext interactionContext, @Nullable ItemStack itemStack, @NonNull World world, @NonNull Vector3i vector3i) { }
+    protected void simulateInteractWithBlock(@Nonnull InteractionType interactionType, @Nonnull InteractionContext interactionContext, @Nullable ItemStack itemStack, @Nonnull World world, @Nonnull Vector3i vector3i) { }
 }

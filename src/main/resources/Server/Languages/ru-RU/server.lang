@@ -1,0 +1,9 @@
+items.Zip_Line.name = Поддержка зиплайна
+items.Line_Guide.name = Направляющая линия
+items.ZipLine_Tensor.name = Тензор
+items.Zip_Line_Rope.name = Веревка для зиплайна
+items.Zip_Line_Rope2.name = Диагональная веревка для зиплайна
+
+items.Zip_Line.description = Используйте направляющую для соединения двух опор
+items.Line_Guide.description = Это используется для соединения двух опор для канатной дороги
+items.ZipLine_Tensor.description = Используйте это на канатной дороге. Правый щелчок мыши + скорость, левый щелчок мыши - скорость

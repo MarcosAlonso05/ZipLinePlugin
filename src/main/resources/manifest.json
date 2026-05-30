@@ -1,24 +1,24 @@
 {
-  "Group": "Marck.A.A",
-  "Name": "Zip_Line",
-  "Version": "0.1.2",
-  "Description": "A pack that implements a zip line",
-  "Authors": [
-    {
-      "Name": "Marck.A.A",
-      "Email": "",
-      "Url": "https://www.youtube.com/@Marck.A.A"
-    }
-  ],
-  "Website": "https://www.youtube.com/@Marck.A.A",
-  "ServerVersion": "${server_version}",
-  "Dependencies": {
-    "Hytale:EntityModule": "*",
-    "Hytale:BlockModule": "*",
-    "Hytale:InteractionModule": "*"
-  },
-  "OptionalDependencies": {},
-  "DisabledByDefault": false,
-  "IncludesAssetPack": true,
-  "Main": "com.marckaa.ziplineplugin.ZiplinePlugin"
+    "Group": "MarckAA",
+    "Name": "ZipLinePlugin",
+    "Version": "0.1.5",
+    "Description": "A pack that implements a zip line",
+    "Authors": [
+        {
+            "Name": "Marck.A.A",
+            "Email": "",
+            "Url": "https://www.youtube.com/@Marck.A.A"
+        }
+    ],
+    "Website": "https://www.youtube.com/@Marck.A.A",
+    "DisabledByDefault": false,
+    "IncludesAssetPack": true,
+    "Dependencies": {
+        "Hytale:EntityModule": "*",
+        "Hytale:BlockModule": "*",
+        "Hytale:InteractionModule": "*"
+    },
+    "OptionalDependencies": {},
+    "ServerVersion": ">=0.5.3 <0.6.0",
+    "Main": "com.marckaa.ziplineplugin.ZiplinePlugin"
 }

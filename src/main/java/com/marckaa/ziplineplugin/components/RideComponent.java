@@ -5,10 +5,12 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
-import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3dUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.marckaa.ziplineplugin.ZiplinePlugin;
-import org.jspecify.annotations.Nullable;
+import org.joml.Vector3d;
+
+import javax.annotation.Nullable;
 
 public class RideComponent implements Component<EntityStore> {
 
@@ -45,8 +47,8 @@ public class RideComponent implements Component<EntityStore> {
     public void setSpeed(double speed) { this.speed = speed; }
 
     public static final BuilderCodec<RideComponent> CODEC = BuilderCodec.builder(RideComponent.class, RideComponent::new)
-            .append(new KeyedCodec<>("Anchor", Vector3d.CODEC), (c, v) -> c.anchorPos = v, c -> c.anchorPos).add()
-            .append(new KeyedCodec<>("End", Vector3d.CODEC), (c, v) -> c.endPos = v, c -> c.endPos).add()
+            .append(new KeyedCodec<>("Anchor", Vector3dUtil.CODEC), (c, v) -> c.anchorPos = v, c -> c.anchorPos).add()
+            .append(new KeyedCodec<>("End", Vector3dUtil.CODEC), (c, v) -> c.endPos = v, c -> c.endPos).add()
             .append(new KeyedCodec<>("Speed", Codec.DOUBLE), (c, v) -> c.speed = v, c -> c.speed).add()
             .append(new KeyedCodec<>("Accel", Codec.DOUBLE), (c, v) -> c.acceleration = v, c -> c.acceleration).add()
             .append(new KeyedCodec<>("MaxSpeed", Codec.DOUBLE), (c, v) -> c.maxSpeed = v, c -> c.maxSpeed).add()

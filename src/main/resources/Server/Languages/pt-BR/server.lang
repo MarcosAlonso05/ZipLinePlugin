@@ -1,0 +1,9 @@
+items.Zip_Line.name = Suporte para tirolesa
+items.Line_Guide.name = Linha Guia
+items.ZipLine_Tensor.name = Tensor
+items.Zip_Line_Rope.name = Corda de tirolesa
+items.Zip_Line_Rope2.name = Corda de tirolesa Diagonal
+
+items.Zip_Line.description = Utilize uma linha guia para ligar os dois suportes.
+items.Line_Guide.description = Este serve para ligar dois suportes de tirolesa.
+items.ZipLine_Tensor.description = Use isso numa tirolesa. Clique com o botão direito + velocidade, clique com o botão esquerdo - velocidade.

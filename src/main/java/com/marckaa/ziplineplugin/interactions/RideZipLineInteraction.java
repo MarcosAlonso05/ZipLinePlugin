@@ -4,14 +4,13 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3i;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
 import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
@@ -24,8 +23,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.marckaa.ziplineplugin.ZiplineUtils;
 import com.marckaa.ziplineplugin.components.RideComponent;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class RideZipLineInteraction extends SimpleBlockInteraction {
 
@@ -40,19 +40,18 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
     }
 
     @Override
-    protected void interactWithBlock(@NonNull World world,
-                                     @NonNull CommandBuffer<EntityStore> commandBuffer,
-                                     @NonNull InteractionType interactionType,
-                                     @NonNull InteractionContext context,
+    protected void interactWithBlock(@Nonnull World world,
+                                     @Nonnull CommandBuffer<EntityStore> commandBuffer,
+                                     @Nonnull InteractionType interactionType,
+                                     @Nonnull InteractionContext context,
                                      @Nullable ItemStack itemInHand,
-                                     @NonNull Vector3i targetBlock,
-                                     @NonNull CooldownHandler cooldownHandler) {
+                                     @Nonnull Vector3i targetBlock,
+                                     @Nonnull CooldownHandler cooldownHandler) {
 
         Ref<EntityStore> playerRef = context.getEntity();
         if (playerRef == null) return;
 
         Store<EntityStore> store = playerRef.getStore();
-        Player playerComp = store.getComponent(playerRef, Player.getComponentType());
 
         RideComponent currentRide = store.getComponent(playerRef, RideComponent.getComponentType());
         if (currentRide != null) {
@@ -60,10 +59,10 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
 
             Velocity velocity = store.getComponent(playerRef, Velocity.getComponentType());
             if (velocity != null) {
-                Vector3d direction = new Vector3d(currentRide.getEndPos()).subtract(currentRide.getAnchorPos()).normalize();
+                Vector3d direction = new Vector3d(currentRide.getEndPos()).sub(currentRide.getAnchorPos()).normalize();
 
                 double exitSpeed = currentRide.getSpeed() * 0.7;
-                Vector3d exitVelocity = direction.scale(exitSpeed);
+                Vector3d exitVelocity = direction.mul(exitSpeed);
 
                 exitVelocity.y += 0.2;
 
@@ -71,7 +70,6 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
             }
 
             AnimationUtils.playAnimation(playerRef, ANIM_SLOT, "Idle", true, store);
-
             return;
         }
 
@@ -112,7 +110,7 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
         TransformComponent playerTransform = store.getComponent(playerRef, TransformComponent.getComponentType());
 
         if (velocity != null && playerTransform != null) {
-            Vector3d direction = new Vector3d(anchorVec).subtract(playerTransform.getPosition()).normalize().scale(startSpeed);
+            Vector3d direction = new Vector3d(anchorVec).sub(playerTransform.getPosition()).normalize().mul(startSpeed);
             velocity.addInstruction(direction, (VelocityConfig) null, ChangeVelocityType.Set);
         }
 
@@ -120,6 +118,6 @@ public class RideZipLineInteraction extends SimpleBlockInteraction {
     }
 
     @Override
-    protected void simulateInteractWithBlock(@NonNull InteractionType interactionType, @NonNull InteractionContext interactionContext, @Nullable ItemStack itemStack, @NonNull World world, @NonNull Vector3i vector3i) {
+    protected void simulateInteractWithBlock(@Nonnull InteractionType interactionType, @Nonnull InteractionContext interactionContext, @Nullable ItemStack itemStack, @Nonnull World world, @Nonnull Vector3i vector3i) {
     }
 }

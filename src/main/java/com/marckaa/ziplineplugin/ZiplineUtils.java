@@ -1,13 +1,14 @@
 package com.marckaa.ziplineplugin;
 
 import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.math.vector.Vector3i;
+import org.joml.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
-import org.jspecify.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 import java.util.HashSet;
 import java.util.LinkedList;

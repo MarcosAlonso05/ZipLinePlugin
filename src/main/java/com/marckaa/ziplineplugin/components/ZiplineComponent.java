@@ -5,10 +5,12 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
-import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.math.vector.Vector3iUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.marckaa.ziplineplugin.ZiplinePlugin;
-import org.jspecify.annotations.Nullable;
+import org.joml.Vector3i;
+
+import javax.annotation.Nullable;
 
 public class ZiplineComponent implements Component<ChunkStore> {
 
@@ -39,7 +41,7 @@ public class ZiplineComponent implements Component<ChunkStore> {
     public boolean isConnected() { return isConnected; }
 
     public static final BuilderCodec<ZiplineComponent> CODEC = BuilderCodec.builder(ZiplineComponent.class, ZiplineComponent::new)
-            .append(new KeyedCodec<>("Target", Vector3i.CODEC), (c, v) -> c.target = v, c -> c.target).add()
+            .append(new KeyedCodec<>("Target", Vector3iUtil.CODEC), (c, v) -> c.target = v, c -> c.target).add()
             .append(new KeyedCodec<>("IsConnected", Codec.BOOLEAN), (c, v) -> c.isConnected = v, c -> c.isConnected).add()
             .append(new KeyedCodec<>("Speed", Codec.DOUBLE), (c, v) -> c.speed = v, c -> c.speed).add()
             .build();

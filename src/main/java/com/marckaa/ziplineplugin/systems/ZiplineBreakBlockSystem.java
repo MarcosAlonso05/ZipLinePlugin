@@ -5,15 +5,16 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.EntityEventSystem;
-import com.hypixel.hytale.math.vector.Vector3i;
+import org.joml.Vector3i;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.marckaa.ziplineplugin.ZiplineUtils;
 import com.marckaa.ziplineplugin.components.ZiplineComponent;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ZiplineBreakBlockSystem extends EntityEventSystem<EntityStore, BreakBlockEvent> {
 
@@ -28,10 +29,10 @@ public class ZiplineBreakBlockSystem extends EntityEventSystem<EntityStore, Brea
 
     @Override
     public void handle(int entityIndex,
-                       @NonNull ArchetypeChunk<EntityStore> chunk,
-                       @NonNull Store<EntityStore> store,
-                       @NonNull CommandBuffer<EntityStore> commandBuffer,
-                       @NonNull BreakBlockEvent event) {
+                       @Nonnull ArchetypeChunk<EntityStore> chunk,
+                       @Nonnull Store<EntityStore> store,
+                       @Nonnull CommandBuffer<EntityStore> commandBuffer,
+                       @Nonnull BreakBlockEvent event) {
 
         World world = ((EntityStore) store.getExternalData()).getWorld();
         Vector3i pos = event.getTargetBlock();
